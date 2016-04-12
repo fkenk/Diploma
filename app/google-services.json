@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_id": "my-application-398d5",
+    "project_number": "654541943771",
+    "name": "My Application"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:654541943771:android:27462ec4598a48e8",
+        "client_id": "android:arthurveslo.my.myapplication",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "arthurveslo.my.myapplication",
+          "certificate_hash": []
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "654541943771-rknvgcot7c3ep17bet1muk58dec3knoo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "arthurveslo.my.myapplication",
+            "certificate_hash": "7FA9F8BAB20FABC62D801543780AF2ADEC7ECC1B"
+          }
+        },
+        {
+          "client_id": "654541943771-ltgp3lpke9h09vs3vvvfmihc6kn267tq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}
