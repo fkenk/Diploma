@@ -23,7 +23,7 @@ public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 
-    private static final String TAG = "SignInActivity";
+    private static final String TAG = "LoginInActivity";
     private static final int RC_SIGN_IN = 9001;
 
     private GoogleApiClient mGoogleApiClient;
@@ -121,10 +121,12 @@ public class LoginActivity extends AppCompatActivity implements
             GoogleSignInAccount acct = result.getSignInAccount();
             mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getId()));
             Intent intent = new Intent(this, MainActivity.class);
-            //intent.putExtra(E, message);
-            Log.d(TAG, "STARTED MAIN ACTIV");
+            intent.putExtra("id", acct.getId());
+            intent.putExtra("name", acct.getDisplayName());
+            intent.putExtra("photo_url",acct.getPhotoUrl());
+            intent.putExtra("e_mail",acct.getEmail());
+            Log.d(TAG, "STARTED MAIN ACTIVITY");
             startActivity(intent);
-
             //updateUI(true);
         } else {
             // Signed out, show unauthenticated UI.

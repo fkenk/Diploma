@@ -1,8 +1,10 @@
 package arthurveslo.my.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,9 +15,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.List;
+
+import arthurveslo.my.myapplication.DB.DatabaseHandler;
+import arthurveslo.my.myapplication.DB.User;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +48,26 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        /////DataBase
+        DatabaseHandler db = new DatabaseHandler(this);
+        Intent intent = getIntent();
+        String id = intent.getStringExtra("id");
+        String name = intent.getStringExtra("name");
+        String e_mail = intent.getStringExtra("e_mail");
+        String photo_url = intent.getStringExtra("photo_url");
+        db.addUser(new User(name,id));
+
+        System.out.println("Reading all contacts..");
+        List<User> users = db.getAllUsers();
+        for (User user : users) {
+            String log = "Id: "+user.get_id()
+                    +" ,Name: " + user.get_name()
+                    +" ,Sex: " + user.get_sex();
+            Log.d(TAG, log);
+        }
+
+        ///////////////
     }
 
     @Override
