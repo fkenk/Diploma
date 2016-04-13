@@ -124,6 +124,7 @@ public class LoginActivity extends AppCompatActivity implements
             intent.putExtra("id", acct.getId());
             intent.putExtra("name", acct.getDisplayName());
             intent.putExtra("photo_url",acct.getPhotoUrl());
+            Log.d(TAG, String.valueOf(acct.getPhotoUrl()));
             intent.putExtra("e_mail",acct.getEmail());
             Log.d(TAG, "STARTED MAIN ACTIVITY");
             startActivity(intent);

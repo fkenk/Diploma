@@ -8,11 +8,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
+    private static final String TAG = "DatabaseHandler";
 
     private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "mainDB";
@@ -79,7 +81,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_AGE, user.get_age());
         values.put(KEY_SEX, user.get_sex());
         values.put(KEY_BMR, user.get_BMR());
-        db.insert(TABLE_USERS, null, values);
+        try {
+            db.insertOrThrow(TABLE_USERS, null, values);
+        } catch (Exception e) {
+            Log.e(TAG, String.valueOf(e));
+        }
         db.close();
     }
 
