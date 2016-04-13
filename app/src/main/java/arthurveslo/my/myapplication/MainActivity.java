@@ -45,14 +45,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+       /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity
                     + " ,Sex: " + user.get_sex();
             Log.d(TAG, log);
         }
-
+        //////NAV BAR
         View headerView = navigationView.getHeaderView(0); ///???? 0 lol
         /*new DownloadImageTask((ImageView) headerView.findViewById(R.id.imageView))
                 .execute(photo_url);*/
