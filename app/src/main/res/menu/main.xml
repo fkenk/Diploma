@@ -6,4 +6,8 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item android:id="@+id/action_unregister_listener"
+        android:title="@string/action_unregister_listener"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 </menu>
