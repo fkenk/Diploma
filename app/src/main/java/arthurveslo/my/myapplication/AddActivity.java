@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,7 +21,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -31,6 +34,8 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 
+import arthurveslo.my.myapplication.adapters.AdapterKindsOfSport;
+import arthurveslo.my.myapplication.adapters.SpinnerModel;
 import arthurveslo.my.myapplication.common.logger.Log;
 import arthurveslo.my.myapplication.common.logger.LogView;
 import arthurveslo.my.myapplication.common.logger.LogWrapper;
@@ -93,7 +98,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         initializeLogging();
 
         // When permissions are revoked the app is restarted so onCreate is sufficient to check for
-        // permissions core to the Activity's functionality.
+        // permissions core to the ActivityDB's functionality.
         if (!checkPermissions()) {
             requestPermissions();
         }
@@ -111,6 +116,39 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 setMargins(pauseBtn,0,0,220,0);
                 goBtn.setImageResource(R.drawable.ic_stop_white_24dp);
             }
+        });
+
+        ///spinner
+
+        Spinner SpinnerExample = (Spinner)findViewById(R.id.spinner);
+
+        // Set data in arraylist
+
+        // Resources passed to adapter to get image
+        Resources res = getResources();
+
+        ArrayList<SpinnerModel> spinnerModels = new ArrayList<>();
+        spinnerModels.add(new SpinnerModel("Run","ic_run_black_48dp"));
+        spinnerModels.add(new SpinnerModel("Run","ic_run_black_36dp"));
+        spinnerModels.add(new SpinnerModel("Run","ic_run_black_24dp"));
+        // Create custom adapter object ( see below CustomAdapter.java )
+        AdapterKindsOfSport adapter = new AdapterKindsOfSport(this, R.layout.spinner_rows, spinnerModels,res);
+
+        // Set adapter to spinner
+        SpinnerExample.setAdapter(adapter);
+
+        // Listener called when spinner item selected
+        SpinnerExample.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View v, int position, long id) {
+                // your code here
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
         });
     }
 
@@ -209,7 +247,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                             Log.i(TAG, "Data source found: " + dataSource.toString());
                             Log.i(TAG, "Data Source type: " + dataSource.getDataType().getName());
 
-                            //Let's register a listener to receive Activity data!
+                            //Let's register a listener to receive ActivityDB data!
                             if (dataSource.getDataType().equals(DataType.TYPE_LOCATION_SAMPLE)
                                     && mListener == null) {
                                 Log.i(TAG, "Data source for LOCATION_SAMPLE found!  Registering.");
@@ -457,8 +495,8 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
             } else {
                 // Permission denied.
 
-                // In this Activity we've chosen to notify the user that they
-                // have rejected a core permission for the app since it makes the Activity useless.
+                // In this ActivityDB we've chosen to notify the user that they
+                // have rejected a core permission for the app since it makes the ActivityDB useless.
                 // We're communicating this message in a Snackbar since this is a sample app, but
                 // core permissions would typically be best requested during a welcome-screen flow.
 

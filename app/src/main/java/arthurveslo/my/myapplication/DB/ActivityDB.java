@@ -3,13 +3,13 @@ package arthurveslo.my.myapplication.DB;
 /**
  * Created by User on 13.04.2016.
  */
-public class Activity {
+public class ActivityDB {
     String _activity;
     String _user_id;
     double _calories;
     int steps;
 
-    public Activity(String _activity, String _user_id, double _calories, int steps) {
+    public ActivityDB(String _activity, String _user_id, double _calories, int steps) {
         this._activity = _activity;
         this._user_id = _user_id;
         this._calories = _calories;

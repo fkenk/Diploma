@@ -31,10 +31,12 @@
         android:layout_weight="1.0"
         android:orientation="vertical" >
 
-        <ExpandableListView
+
+        <Spinner
             android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:id="@+id/expandableListView" />
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner"
+            android:layout_gravity="center_horizontal" />
 
         <ScrollView
             android:layout_width="match_parent"
