@@ -1,18 +1,23 @@
 package arthurveslo.my.myapplication;
+
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
@@ -21,10 +26,12 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
+
 import arthurveslo.my.myapplication.common.logger.Log;
 import arthurveslo.my.myapplication.common.logger.LogView;
 import arthurveslo.my.myapplication.common.logger.LogWrapper;
 import arthurveslo.my.myapplication.common.logger.MessageOnlyLogFilter;
+
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSource;
@@ -35,7 +42,16 @@ import com.google.android.gms.fitness.request.DataSourcesRequest;
 import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
 import com.google.android.gms.fitness.result.DataSourcesResult;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 
@@ -44,12 +60,14 @@ import java.util.concurrent.TimeUnit;
  * available data sources and to register/unregister listeners to those sources. It also
  * demonstrates how to authenticate a user with Google Play Services.
  */
-public class AddActivity extends AppCompatActivity {
+public class AddActivity extends AppCompatActivity implements OnMapReadyCallback {
     public static final String TAG = "BasicSensorsApi";
+    private GoogleMap mMap;
     // [START auth_variable_references]
     private GoogleApiClient mClient = null;
     // [END auth_variable_references]
-
+    private ArrayList<Double> arrayListLatitude = new ArrayList<Double>();
+    private ArrayList<Double> arrayListLongitude = new ArrayList<Double>();
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     // [START mListener_variable_reference]
@@ -75,6 +93,10 @@ public class AddActivity extends AppCompatActivity {
         if (!checkPermissions()) {
             requestPermissions();
         }
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -88,13 +110,14 @@ public class AddActivity extends AppCompatActivity {
     // [END auth_oncreate_setup]
 
     // [START auth_build_googleapiclient_beginning]
+
     /**
-     *  Build a {@link GoogleApiClient} that will authenticate the user and allow the application
-     *  to connect to Fitness APIs. The scopes included should match the scopes your app needs
-     *  (see documentation for details). Authentication will occasionally fail intentionally,
-     *  and in those cases, there will be a known resolution, which the OnConnectionFailedListener()
-     *  can address. Examples of this include the user never having signed in before, or having
-     *  multiple accounts on the device and needing to specify which account to use, etc.
+     * Build a {@link GoogleApiClient} that will authenticate the user and allow the application
+     * to connect to Fitness APIs. The scopes included should match the scopes your app needs
+     * (see documentation for details). Authentication will occasionally fail intentionally,
+     * and in those cases, there will be a known resolution, which the OnConnectionFailedListener()
+     * can address. Examples of this include the user never having signed in before, or having
+     * multiple accounts on the device and needing to specify which account to use, etc.
      */
     private void buildFitnessClient() {
         if (mClient == null && checkPermissions()) {
@@ -148,8 +171,8 @@ public class AddActivity extends AppCompatActivity {
      * Find available data sources and attempt to register on a specific {@link DataType}.
      * If the application cares about a data type but doesn't care about the source of the data,
      * this can be skipped entirely, instead calling
-     *     {@link com.google.android.gms.fitness.SensorsApi
-     *     #register(GoogleApiClient, SensorRequest, DataSourceListener)},
+     * {@link com.google.android.gms.fitness.SensorsApi
+     * #register(GoogleApiClient, SensorRequest, DataSourceListener)},
      * where the {@link SensorRequest} contains the desired data type.
      */
     private void findFitnessDataSources() {
@@ -161,7 +184,7 @@ public class AddActivity extends AppCompatActivity {
                         DataType.TYPE_STEP_COUNT_DELTA,
                         DataType.TYPE_DISTANCE_DELTA)
                 // Can specify whether data type is raw or derived.
-                .setDataSourceTypes(DataSource.TYPE_RAW,DataSource.TYPE_DERIVED)
+                .setDataSourceTypes(DataSource.TYPE_RAW, DataSource.TYPE_DERIVED)
                 .build())
                 .setResultCallback(new ResultCallback<DataSourcesResult>() {
                     @Override
@@ -172,14 +195,13 @@ public class AddActivity extends AppCompatActivity {
                             Log.i(TAG, "Data Source type: " + dataSource.getDataType().getName());
 
                             //Let's register a listener to receive Activity data!
-                            /*if (dataSource.getDataType().equals(DataType.TYPE_LOCATION_SAMPLE)
+                            if (dataSource.getDataType().equals(DataType.TYPE_LOCATION_SAMPLE)
                                     && mListener == null) {
                                 Log.i(TAG, "Data source for LOCATION_SAMPLE found!  Registering.");
                                 registerFitnessDataListener(dataSource,
                                         DataType.TYPE_LOCATION_SAMPLE);
-                            }*/
-                            if (    dataSource.getDataType().equals(DataType.TYPE_LOCATION_SAMPLE) ||
-                                    dataSource.getDataType().equals(DataType.TYPE_STEP_COUNT_DELTA) ||
+                            }
+                            if (dataSource.getDataType().equals(DataType.TYPE_STEP_COUNT_DELTA) ||
                                     dataSource.getDataType().equals(DataType.TYPE_DISTANCE_DELTA) ||
                                     dataSource.getDataType().equals(DataType.TYPE_HEART_RATE_BPM)) {
                                 Fitness.SensorsApi.add(mClient,
@@ -225,10 +247,45 @@ public class AddActivity extends AppCompatActivity {
         mListener = new OnDataPointListener() {
             @Override
             public void onDataPoint(DataPoint dataPoint) {
+                double latitude;
+                double longitude;
                 for (Field field : dataPoint.getDataType().getFields()) {
                     Value val = dataPoint.getValue(field);
                     Log.i(TAG, "Detected DataPoint field: " + field.getName());
                     Log.i(TAG, "Detected DataPoint value: " + val);
+                    android.util.Log.e(TAG, "Detected DataPoint value: " + val);
+                    if (field.getName().equals("latitude")) {
+                        latitude = val.asFloat();
+                        arrayListLatitude.add(latitude); //50.632755279541016
+                    }
+                    if (field.getName().equals("longitude")) {
+                        longitude = val.asFloat();
+                        arrayListLongitude.add(longitude); //26.2580509185791
+                    }
+
+                }
+                if (arrayListLatitude.size() > 1 && arrayListLongitude.size() > 1) {
+                    Handler mainHandler = new Handler(getBaseContext().getMainLooper());
+
+                    Runnable myRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            mMap.addPolyline(new PolylineOptions()
+                                    .add(new LatLng(arrayListLatitude.get(arrayListLatitude.size() - 2),
+                                                    arrayListLongitude.get(arrayListLongitude.size() - 2)),
+                                            new LatLng(arrayListLatitude.get(arrayListLatitude.size() - 1),
+                                                    arrayListLongitude.get(arrayListLongitude.size() - 1)))
+                                    .width(5)
+                                    .color(Color.RED));
+                            Context context = getApplicationContext();
+                            CharSequence text = "Hello toast!";
+                            int duration = Toast.LENGTH_SHORT;
+
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                        } // This is your code
+                    };
+                    mainHandler.post(myRunnable);
                 }
             }
         };
@@ -302,7 +359,7 @@ public class AddActivity extends AppCompatActivity {
     }
 
     /**
-     *  Initialize a custom log class that outputs both to in-app targets and logcat.
+     * Initialize a custom log class that outputs both to in-app targets and logcat.
      */
     private void initializeLogging() {
         // Wraps Android's native log framework.
@@ -415,6 +472,22 @@ public class AddActivity extends AppCompatActivity {
                         })
                         .show();
             }
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        } else {
+            // Show rationale and request permission.
         }
     }
 }
