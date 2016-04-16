@@ -108,17 +108,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        //// go to map activity
-        Button map_activity = (Button) findViewById(R.id.button_map_activity);
-        map_activity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), MapsActivity.class);
-                Log.d(TAG, "STARTED Map Activity");
-                startActivity(intent);
-            }
-        });
-
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
