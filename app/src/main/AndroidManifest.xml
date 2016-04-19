@@ -36,8 +36,8 @@
             android:name=".AddActivity"
             android:label="@string/title_activity_add"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/MaterialTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/MaterialTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="arthurveslo.my.myapplication.MainActivity" />
@@ -56,9 +56,14 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".ScrollingActivity"
-            android:label="@string/title_activity_scrolling"
-            android:theme="@style/MaterialTheme.NoActionBar"></activity>
+            android:name=".SaveActivity"
+            android:label="@string/title_activity_save"
+            android:parentActivityName=".AddActivity"
+            android:theme="@style/MaterialTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="arthurveslo.my.myapplication.AddActivity" />
+        </activity>
     </application>
 
 </manifest>
