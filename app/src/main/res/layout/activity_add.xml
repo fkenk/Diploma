@@ -18,8 +18,18 @@
         android:layout_marginRight="@dimen/fab_margin"
         android:src="@drawable/ic_pause_white_24dp" />
 
+
+
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/go"
+        android:id="@+id/stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_stop_white_24dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|right"

@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -60,6 +61,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -82,8 +84,21 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
     // [START mListener_variable_reference]
     // Need to hold a reference to this listener, as it's passed into the "unregister"
     // method in order to stop all sensors from sending data to this listener.
-    private OnDataPointListener mListener;
+    private ArrayList<OnDataPointListener> arrayListeners = new ArrayList<>();
     // [END mListener_variable_reference]
+
+    //Counters
+    int steps;
+    double latitude;
+    double longitude;
+    double distance;
+    double calories;
+
+    //MainThread
+    Handler mainHandler;
+
+    //Write Flag
+    boolean writeFlag = false;
 
 
     // [START auth_oncreate_setup]
@@ -93,6 +108,8 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         // Put application specific code here.
 
         setContentView(R.layout.activity_add);
+
+        mainHandler = new Handler(getBaseContext().getMainLooper());
         // This method sets up our custom logger, which will print all log messages to the device
         // screen, as well as to adb logcat.
         initializeLogging();
@@ -108,19 +125,38 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         // button go
-        final FloatingActionButton goBtn = (FloatingActionButton) findViewById(R.id.go);
+        final FloatingActionButton playBtn = (FloatingActionButton) findViewById(R.id.play);
         final FloatingActionButton pauseBtn = (FloatingActionButton) findViewById(R.id.pause);
-        goBtn.setOnClickListener(new View.OnClickListener() {
+        final FloatingActionButton stopBtn = (FloatingActionButton) findViewById(R.id.stop);
+        playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMargins(pauseBtn,0,0,220,0);
-                goBtn.setImageResource(R.drawable.ic_stop_white_24dp);
+                setMargins(pauseBtn, 0, 0, 220, 0);
+                playBtn.setVisibility(View.GONE);
+                pauseBtn.setVisibility(View.VISIBLE);
+                writeFlag = true;
             }
         });
+        pauseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeFlag = false;
+                setMargins(playBtn, 0, 0, 220, 0);
+                pauseBtn.setVisibility(View.GONE);
+                playBtn.setVisibility(View.VISIBLE);
+                arrayListLatitude.clear();
+                arrayListLongitude.clear();
+            }
+        });
+        stopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+            }
+        });
         ///spinner
 
-        Spinner SpinnerExample = (Spinner)findViewById(R.id.spinner);
+        Spinner SpinnerExample = (Spinner) findViewById(R.id.spinner);
 
         // Set data in arraylist
 
@@ -128,11 +164,11 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         Resources res = getResources();
 
         ArrayList<SpinnerModel> spinnerModels = new ArrayList<>();
-        spinnerModels.add(new SpinnerModel("Run","ic_run_black_48dp"));
-        spinnerModels.add(new SpinnerModel("Run","ic_run_black_36dp"));
-        spinnerModels.add(new SpinnerModel("Run","ic_run_black_24dp"));
+        spinnerModels.add(new SpinnerModel("Run", "ic_run_black_48dp"));
+        spinnerModels.add(new SpinnerModel("Run", "ic_run_black_36dp"));
+        spinnerModels.add(new SpinnerModel("Run", "ic_run_black_24dp"));
         // Create custom adapter object ( see below CustomAdapter.java )
-        AdapterKindsOfSport adapter = new AdapterKindsOfSport(this, R.layout.spinner_rows, spinnerModels,res);
+        AdapterKindsOfSport adapter = new AdapterKindsOfSport(this, R.layout.spinner_rows, spinnerModels, res);
 
         // Set adapter to spinner
         SpinnerExample.setAdapter(adapter);
@@ -244,46 +280,15 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                     public void onResult(DataSourcesResult dataSourcesResult) {
                         Log.i(TAG, "Result: " + dataSourcesResult.getStatus().toString());
                         for (DataSource dataSource : dataSourcesResult.getDataSources()) {
-                            Log.i(TAG, "Data source found: " + dataSource.toString());
+                           // Log.i(TAG, "Data source found: " + dataSource.toString());
                             Log.i(TAG, "Data Source type: " + dataSource.getDataType().getName());
 
                             //Let's register a listener to receive ActivityDB data!
-                            if (dataSource.getDataType().equals(DataType.TYPE_LOCATION_SAMPLE)
-                                    && mListener == null) {
-                                Log.i(TAG, "Data source for LOCATION_SAMPLE found!  Registering.");
-                                registerFitnessDataListener(dataSource,
-                                        DataType.TYPE_LOCATION_SAMPLE);
-                            }
-                            if (dataSource.getDataType().equals(DataType.TYPE_STEP_COUNT_DELTA) ||
-                                    dataSource.getDataType().equals(DataType.TYPE_DISTANCE_DELTA) ||
-                                    dataSource.getDataType().equals(DataType.TYPE_HEART_RATE_BPM)) {
-                                Fitness.SensorsApi.add(mClient,
-                                        new SensorRequest.Builder()
-                                                .setDataSource(dataSource)
-                                                .setDataType(dataSource.getDataType())
-                                                .setSamplingRate(5, TimeUnit.SECONDS)
-                                                .build(),
-                                        new OnDataPointListener() {
-                                            @Override
-                                            public void onDataPoint(DataPoint dataPoint) {
-                                                String msg = "onDataPoint: ";
-                                                for (Field field : dataPoint.getDataType().getFields()) {
-                                                    Value value = dataPoint.getValue(field);
-                                                    msg += "onDataPoint: " + field + "=" + value + ", ";
-                                                }
-                                                Log.i(TAG, "Detected DataPoint field: " + msg);
-                                            }
-                                        })
-                                        .setResultCallback(new ResultCallback<Status>() {
-                                            @Override
-                                            public void onResult(Status status) {
-                                                if (status.isSuccess()) {
-                                                    Log.i(TAG, "Listener registered!");
-                                                } else {
-                                                    Log.i(TAG, "Listener not registered.");
-                                                }
-                                            }
-                                        });
+                            if (dataSource.getDataType().equals(DataType.TYPE_LOCATION_SAMPLE) ||
+                                    dataSource.getDataType().equals(DataType.TYPE_STEP_COUNT_DELTA) ||
+                                    dataSource.getDataType().equals(DataType.TYPE_DISTANCE_DELTA)) {
+                                Log.i(TAG, "Registering.");
+                                registerFitnessDataListener(dataSource, dataSource.getDataType());
                             }
                         }
                     }
@@ -297,29 +302,18 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
      */
     private void registerFitnessDataListener(DataSource dataSource, DataType dataType) {
         // [START register_data_listener]
-        mListener = new OnDataPointListener() {
+        OnDataPointListener mListener = new OnDataPointListener() {
             @Override
             public void onDataPoint(DataPoint dataPoint) {
-                double latitude;
-                double longitude;
                 for (Field field : dataPoint.getDataType().getFields()) {
                     Value val = dataPoint.getValue(field);
                     Log.i(TAG, "Detected DataPoint field: " + field.getName());
                     Log.i(TAG, "Detected DataPoint value: " + val);
-                    android.util.Log.e(TAG, "Detected DataPoint value: " + val);
-                    if (field.getName().equals("latitude")) {
-                        latitude = val.asFloat();
-                        arrayListLatitude.add(latitude); //50.632755279541016
-                    }
-                    if (field.getName().equals("longitude")) {
-                        longitude = val.asFloat();
-                        arrayListLongitude.add(longitude); //26.2580509185791
-                    }
-
+                    //android.util.Log.e(TAG, "Detected DataPoint value: " + val);
+                    setValuesTextView(field.getName(), val);
                 }
+                /// MAP ADD POLYLINE
                 if (arrayListLatitude.size() > 1 && arrayListLongitude.size() > 1) {
-                    Handler mainHandler = new Handler(getBaseContext().getMainLooper());
-
                     Runnable myRunnable = new Runnable() {
                         @Override
                         public void run() {
@@ -342,7 +336,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             }
         };
-
+        arrayListeners.add(mListener);
         Fitness.SensorsApi.add(
                 mClient,
                 new SensorRequest.Builder()
@@ -368,7 +362,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
      * Unregister the listener with the Sensors API.
      */
     private void unregisterFitnessDataListener() {
-        if (mListener == null) {
+        if (arrayListeners.size() == 0) {
             // This code only activates one listener at a time.  If there's no listener, there's
             // nothing to unregister.
             return;
@@ -378,19 +372,21 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         // Waiting isn't actually necessary as the unregister call will complete regardless,
         // even if called from within onStop, but a callback can still be added in order to
         // inspect the results.
-        Fitness.SensorsApi.remove(
-                mClient,
-                mListener)
-                .setResultCallback(new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        if (status.isSuccess()) {
-                            Log.i(TAG, "Listener was removed!");
-                        } else {
-                            Log.i(TAG, "Listener was not removed.");
+        for (OnDataPointListener listener : arrayListeners) {
+            Fitness.SensorsApi.remove(
+                    mClient,
+                    listener)
+                    .setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status status) {
+                            if (status.isSuccess()) {
+                                Log.i(TAG, "Listener was removed!");
+                            } else {
+                                Log.i(TAG, "Listener was not removed.");
+                            }
                         }
-                    }
-                });
+                    });
+        }
         // [END unregister_data_listener]
     }
 
@@ -545,11 +541,41 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
 
-    private void setMargins (View view, int left, int top, int right, int bottom) {
+    private void setMargins(View view, int left, int top, int right, int bottom) {
         if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
             p.setMargins(left, top, right, bottom);
             view.requestLayout();
+        }
+    }
+    private void setValuesTextView(final String name, final Value val) {
+        if (writeFlag) {
+            final Runnable myRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (name.equals("steps")) {
+                        steps += val.asInt();
+                        ((TextView) findViewById(R.id.textSteps)).setText(steps + "steps");
+
+                    }
+                    if (name.equals("distance")) {
+                        distance += val.asFloat();
+                        ((TextView) findViewById(R.id.textDistance)).setText("distance: " + distance);
+                    }
+                    if (name.equals("latitude")) {
+                        latitude = val.asFloat();
+                        arrayListLatitude.add(latitude); //50.632755279541016
+                        ((TextView) findViewById(R.id.textLatitude)).setText("latitude:" + latitude);
+                    }
+                    if (name.equals("longitude")) {
+                        longitude = val.asFloat();
+                        arrayListLongitude.add(longitude); //26.2580509185791
+                        ((TextView) findViewById(R.id.textLatitude)).setText("longitude:" + longitude);
+
+                    }
+                }
+            };
+            mainHandler.post(myRunnable);
         }
     }
 }

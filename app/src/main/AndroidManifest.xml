@@ -36,7 +36,8 @@
             android:name=".AddActivity"
             android:label="@string/title_activity_add"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/MaterialTheme.NoActionBar">
+            android:theme="@style/MaterialTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="arthurveslo.my.myapplication.MainActivity" />
