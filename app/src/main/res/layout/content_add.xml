@@ -40,16 +40,16 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/spinner"
                 android:layout_gravity="center_horizontal"
+                android:popupBackground = "@color/colorPrimary"
                 android:layout_below="@+id/textSteps"
-                android:layout_alignParentStart="true"
-                android:popupBackground = "@color/colorPrimary"/>
+                android:layout_alignParentStart="true" />
 
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:id="@+id/scrollView"
-                android:layout_below="@+id/textView">
+                android:layout_below="@+id/textSpeed">
                 <arthurveslo.my.myapplication.common.logger.LogView
                     android:id="@+id/sample_logview"
                     android:layout_width="match_parent"
@@ -72,7 +72,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="latitude: no data"
                 android:id="@+id/textLatitude"
-                android:layout_below="@+id/spinner"
+                android:layout_below="@+id/textTimer"
                 android:layout_alignParentStart="true" />
 
             <TextView
@@ -110,6 +110,15 @@
                 android:id="@+id/textSpeed"
                 android:layout_below="@+id/textDistance"
                 android:layout_alignParentStart="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="TIMER"
+                android:id="@+id/textTimer"
+                android:layout_below="@+id/spinner"
+                android:layout_centerHorizontal="true" />
         </RelativeLayout>
 
 

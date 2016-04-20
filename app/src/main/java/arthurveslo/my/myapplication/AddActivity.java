@@ -62,7 +62,11 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.sql.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 
@@ -100,6 +104,10 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
 
     //Write Flag
     boolean writeFlag = false;
+
+    //Timer
+    int mCurrentPeriod = 0;
+    private Timer timer;
 
 
     // [START auth_oncreate_setup]
@@ -171,12 +179,21 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 pauseBtn.setVisibility(View.VISIBLE);
                 writeFlag = true;
                 setLayout(spinnerModels.get(SpinnerExample.getSelectedItemPosition()).getActivityName());
+                timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        TimerMethod();
+                    }
+                }, 0, 1000);
 
             }
         });
         pauseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (timer != null)
+                    timer.cancel();
                 writeFlag = false;
                 setMargins(playBtn, 0, 0, 220, 0);
                 pauseBtn.setVisibility(View.GONE);
@@ -188,10 +205,29 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
             }
         });
     }
+
+    private void TimerMethod() {
+// This method is called directly by the timer
+// and runs in the same thread as the timer.
+
+// We call the method that will work with the UI
+// through the runOnUiThread method.
+        this.runOnUiThread(Timer_Tick);
+    }
+    private Runnable Timer_Tick = new Runnable() {
+        public void run() {
+            mCurrentPeriod++;
+            String temp = (new SimpleDateFormat("mm:ss")).format(new Date(
+                    mCurrentPeriod * 1000));
+            ((TextView)findViewById(R.id.textTimer)).setText(temp);
+// This method runs in the same thread as the UI.
+// Do something to the UI thread here
+
+        }
+    };
 
     @Override
     protected void onResume() {
