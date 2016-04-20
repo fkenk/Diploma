@@ -93,6 +93,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
     double longitude;
     double distance;
     double calories;
+    double speed;
 
     //MainThread
     Handler mainHandler;
@@ -124,49 +125,20 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // button go
-        final FloatingActionButton playBtn = (FloatingActionButton) findViewById(R.id.play);
-        final FloatingActionButton pauseBtn = (FloatingActionButton) findViewById(R.id.pause);
-        final FloatingActionButton stopBtn = (FloatingActionButton) findViewById(R.id.stop);
-        playBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setMargins(pauseBtn, 0, 0, 220, 0);
-                playBtn.setVisibility(View.GONE);
-                pauseBtn.setVisibility(View.VISIBLE);
-                writeFlag = true;
-            }
-        });
-        pauseBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                writeFlag = false;
-                setMargins(playBtn, 0, 0, 220, 0);
-                pauseBtn.setVisibility(View.GONE);
-                playBtn.setVisibility(View.VISIBLE);
-                arrayListLatitude.clear();
-                arrayListLongitude.clear();
-            }
-        });
-        stopBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
         ///spinner
 
-        Spinner SpinnerExample = (Spinner) findViewById(R.id.spinner);
+        final Spinner SpinnerExample = (Spinner) findViewById(R.id.spinner);
 
         // Set data in arraylist
 
         // Resources passed to adapter to get image
         Resources res = getResources();
 
-        ArrayList<SpinnerModel> spinnerModels = new ArrayList<>();
+        final ArrayList<SpinnerModel> spinnerModels = new ArrayList<>();
         spinnerModels.add(new SpinnerModel("Run", "ic_run_black_48dp"));
-        spinnerModels.add(new SpinnerModel("Run", "ic_run_black_36dp"));
-        spinnerModels.add(new SpinnerModel("Run", "ic_run_black_24dp"));
+        spinnerModels.add(new SpinnerModel("Walk", "ic_walk_white_36dp"));
+        spinnerModels.add(new SpinnerModel("Bike", "ic_bike_black_24dp"));
         // Create custom adapter object ( see below CustomAdapter.java )
         AdapterKindsOfSport adapter = new AdapterKindsOfSport(this, R.layout.spinner_rows, spinnerModels, res);
 
@@ -185,6 +157,39 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 // your code here
             }
 
+        });
+
+        // button go
+        final FloatingActionButton playBtn = (FloatingActionButton) findViewById(R.id.play);
+        final FloatingActionButton pauseBtn = (FloatingActionButton) findViewById(R.id.pause);
+        final FloatingActionButton stopBtn = (FloatingActionButton) findViewById(R.id.stop);
+        playBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMargins(pauseBtn, 0, 0, 220, 0);
+                playBtn.setVisibility(View.GONE);
+                pauseBtn.setVisibility(View.VISIBLE);
+                writeFlag = true;
+                setLayout(spinnerModels.get(SpinnerExample.getSelectedItemPosition()).getActivityName());
+
+            }
+        });
+        pauseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeFlag = false;
+                setMargins(playBtn, 0, 0, 220, 0);
+                pauseBtn.setVisibility(View.GONE);
+                playBtn.setVisibility(View.VISIBLE);
+                arrayListLatitude.clear();
+                arrayListLongitude.clear();
+            }
+        });
+        stopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
         });
     }
 
@@ -271,7 +276,8 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 // At least one datatype must be specified.
                 .setDataTypes(DataType.TYPE_LOCATION_SAMPLE,
                         DataType.TYPE_STEP_COUNT_DELTA,
-                        DataType.TYPE_DISTANCE_DELTA)
+                        DataType.TYPE_DISTANCE_DELTA,
+                        DataType.TYPE_SPEED)
                 // Can specify whether data type is raw or derived.
                 .setDataSourceTypes(DataSource.TYPE_RAW, DataSource.TYPE_DERIVED)
                 .build())
@@ -286,7 +292,8 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                             //Let's register a listener to receive ActivityDB data!
                             if (dataSource.getDataType().equals(DataType.TYPE_LOCATION_SAMPLE) ||
                                     dataSource.getDataType().equals(DataType.TYPE_STEP_COUNT_DELTA) ||
-                                    dataSource.getDataType().equals(DataType.TYPE_DISTANCE_DELTA)) {
+                                    dataSource.getDataType().equals(DataType.TYPE_DISTANCE_DELTA) ||
+                                    dataSource.getDataType().equals(DataType.TYPE_SPEED)) {
                                 Log.i(TAG, "Registering.");
                                 registerFitnessDataListener(dataSource, dataSource.getDataType());
                             }
@@ -556,7 +563,6 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                     if (name.equals("steps")) {
                         steps += val.asInt();
                         ((TextView) findViewById(R.id.textSteps)).setText(steps + "steps");
-
                     }
                     if (name.equals("distance")) {
                         distance += val.asFloat();
@@ -573,9 +579,28 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                         ((TextView) findViewById(R.id.textLatitude)).setText("longitude:" + longitude);
 
                     }
+                    if (name.equals("speed")) {
+                        speed = val.asFloat();
+                        ((TextView) findViewById(R.id.textSpeed)).setText("speed:" + speed);
+                    }
                 }
             };
             mainHandler.post(myRunnable);
         }
     }
+
+    private void setLayout(String activityName) {
+        if(activityName.equals("run")) {
+
+        }
+
+        if(activityName.equals("walk")) {
+            
+        }
+
+        if(activityName.equals("bike")) {
+
+        }
+    }
+
 }
