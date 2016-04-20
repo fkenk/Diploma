@@ -147,4 +147,7 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="title_activity_save">SaveActivity</string>
+    <string name="start_training">Start training</string>
+    <string name="add_activity">Add activity</string>
+    <string name="weight_height">Weight, height</string>
 </resources>

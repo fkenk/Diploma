@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity
         TextView textViewEMAIL = (TextView)  headerView.findViewById(R.id.display_e_mail);
         textViewEMAIL.setText(e_mail);
 
-        ///////////////go to add ctivity
+        ///////////////go to add activity
         Button add_activity = (Button) findViewById(R.id.button_add_activity);
         add_activity.setOnClickListener(new View.OnClickListener() {
             @Override

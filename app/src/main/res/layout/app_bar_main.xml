@@ -46,25 +46,24 @@
             fab:menu_fab_size="mini"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_run_black_36dp"
-            fab:fab_label="Menu item 1" />
+            android:src="@drawable/ic_run_white_24dp"
+            fab:fab_label="@string/start_training" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab2"
             fab:menu_fab_size="mini"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_content_add_circle"
-            fab:fab_label="Menu item 1" />
+            android:src="@drawable/ic_weight_kilogram_white_24dp"
+            fab:fab_label="@string/weight_height" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab34"
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_pen_white_24dp"
             fab:menu_fab_size="mini"
-            fab:fab_label="Menu item 1" />
+            fab:fab_label="@string/add_activity" />
 
     </com.github.clans.fab.FloatingActionMenu>
    <!-- <com.github.clans.fab.FloatingActionButton
