@@ -150,4 +150,5 @@
     <string name="start_training">Start training</string>
     <string name="add_activity">Add activity</string>
     <string name="weight_height">Weight, height</string>
+    <string name="title_activity_parametrs">ParametrsActivity</string>
 </resources>

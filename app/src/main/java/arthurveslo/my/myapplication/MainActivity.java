@@ -3,6 +3,7 @@ package arthurveslo.my.myapplication;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import com.github.clans.fab.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity
         /////Get data from login
 
         Intent intent = getIntent();
-        String id = intent.getStringExtra("id");
+        final String id = intent.getStringExtra("id");
         String name = intent.getStringExtra("name");
         String e_mail = intent.getStringExtra("e_mail");
         String photo_url = intent.getStringExtra("photo_url");
@@ -94,12 +95,20 @@ public class MainActivity extends AppCompatActivity
         textViewEMAIL.setText(e_mail);
 
         ///////////////go to add activity
-        Button add_activity = (Button) findViewById(R.id.button_add_activity);
-        add_activity.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton saveParams = (FloatingActionButton) findViewById(R.id.save_parameters);
+        saveParams.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), ParametersActivity.class);
+                intent.putExtra("id",id);
+                startActivity(intent);
+            }
+        });
+        FloatingActionButton startActiv = (FloatingActionButton) findViewById(R.id.start_training);
+        startActiv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), AddActivity.class);
-                Log.d(TAG, "STARTED Add ActivityDB");
                 startActivity(intent);
             }
         });

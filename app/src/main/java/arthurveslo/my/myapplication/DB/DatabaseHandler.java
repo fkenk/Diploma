@@ -89,6 +89,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    public int updateUserParameters(User user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_WEIGHT, user.get_weight());
+        values.put(KEY_HEIGHT, user.get_height());
+        values.put(KEY_SEX, user.get_sex());
+        values.put(KEY_BMR, user.get_BMR());
+
+        return db.update(TABLE_USERS, values, KEY_ID + " = ?",
+                new String[] { String.valueOf(user.get_id()) });
+    }
+
     /*@Override
     public Contact getContact(int id) {
         SQLiteDatabase db = this.getReadableDatabase();

@@ -310,10 +310,11 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         // Note: Fitness.SensorsApi.findDataSources() requires the ACCESS_FINE_LOCATION permission.
         Fitness.SensorsApi.findDataSources(mClient, new DataSourcesRequest.Builder()
                 // At least one datatype must be specified.
-                .setDataTypes(DataType.TYPE_LOCATION_SAMPLE,
+                .setDataTypes(/*DataType.TYPE_LOCATION_SAMPLE,
                         DataType.TYPE_STEP_COUNT_DELTA,
-                        DataType.TYPE_DISTANCE_DELTA,
-                        DataType.TYPE_SPEED)
+                        DataType.TYPE_DISTANCE_DELTA,*/
+                        DataType.TYPE_SPEED
+                        )
                 // Can specify whether data type is raw or derived.
                 .setDataSourceTypes(DataSource.TYPE_RAW, DataSource.TYPE_DERIVED)
                 .build())
@@ -329,7 +330,9 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                             if (dataSource.getDataType().equals(DataType.TYPE_LOCATION_SAMPLE) ||
                                     dataSource.getDataType().equals(DataType.TYPE_STEP_COUNT_DELTA) ||
                                     dataSource.getDataType().equals(DataType.TYPE_DISTANCE_DELTA) ||
-                                    dataSource.getDataType().equals(DataType.TYPE_SPEED)) {
+                                    dataSource.getDataType().equals(DataType.TYPE_SPEED) ||
+                                    dataSource.getDataType().equals(DataType.TYPE_CALORIES_EXPENDED)
+                                    ) {
                                 Log.i(TAG, "Registering.");
                                 registerFitnessDataListener(dataSource, dataSource.getDataType());
                             }
@@ -599,6 +602,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                     if (name.equals("steps")) {
                         steps += val.asInt();
                         ((TextView) findViewById(R.id.textSteps)).setText(steps + "steps");
+                        //Result = (Ves/0.4536)*Sport*Time;
                     }
                     if (name.equals("distance")) {
                         distance += val.asFloat();
