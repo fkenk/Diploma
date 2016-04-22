@@ -64,7 +64,7 @@ public class AdapterKindsOfSport extends ArrayAdapter<String> {
         tempValues = null;
         tempValues = (SpinnerModel) data.get(position);
 
-        TextView label = (TextView) row.findViewById(R.id.company);
+        TextView label = (TextView) row.findViewById(R.id.sport);
         ImageView img = (ImageView) row.findViewById(R.id.image);
 
         label.setText(tempValues.getActivityName());

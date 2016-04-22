@@ -41,16 +41,22 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="arthurveslo.my.myapplication.MainActivity" />
-        </activity>
+            <intent-filter>
+                <action android:name="com.google.android.gms.fitness.service.FitnessSensorService" />
+                <!-- include at least one mimeType filter for the supported data types -->
+                <data android:mimeType="vnd.google.fitness.data_type/com.google.location.sample" />
+         <data android:mimeType="vnd.google.fitness.data_type/com.google.step_count.delta" />
+     </intent-filter>
+ </activity>
 
-        <!--
-             The API key for Google Maps-based APIs is defined as a string resource.
-             (See the file "res/values/google_maps_api.xml").
-             Note that the API key is linked to the encryption key used to sign the APK.
-             You need a different API key for each encryption key, including the release key that is used to
-             sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/.
-        -->
+ <!--
+      The API key for Google Maps-based APIs is defined as a string resource.
+      (See the file "res/values/google_maps_api.xml").
+      Note that the API key is linked to the encryption key used to sign the APK.
+      You need a different API key for each encryption key, including the release key that is used to
+      sign the APK for publishing.
+      You can define the keys for the debug and release targets in src/debug/ and src/release/.
+ -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />

@@ -3,9 +3,13 @@ package arthurveslo.my.myapplication;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,6 +39,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 
+import arthurveslo.my.myapplication.ComplexPreferences.ComplexPreferences;
 import arthurveslo.my.myapplication.adapters.AdapterKindsOfSport;
 import arthurveslo.my.myapplication.adapters.SpinnerModel;
 import arthurveslo.my.myapplication.common.logger.Log;
@@ -52,6 +57,7 @@ import com.google.android.gms.fitness.request.DataSourcesRequest;
 import com.google.android.gms.fitness.request.OnDataPointListener;
 import com.google.android.gms.fitness.request.SensorRequest;
 import com.google.android.gms.fitness.result.DataSourcesResult;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -62,9 +68,12 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.sql.Array;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +84,7 @@ import java.util.concurrent.TimeUnit;
  * available data sources and to register/unregister listeners to those sources. It also
  * demonstrates how to authenticate a user with Google Play Services.
  */
-public class AddActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class AddActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, android.location.LocationListener {
     public static final String TAG = "BasicSensorsApi";
     private GoogleMap mMap;
     // [START auth_variable_references]
@@ -92,12 +101,11 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
     // [END mListener_variable_reference]
 
     //Counters
-    int steps;
-    double latitude;
-    double longitude;
-    double distance;
-    double calories;
-    double speed;
+    int steps = 0;
+    double distance = 0.0;
+    double speed = 0.0;
+    ArrayList<Double> speedList = new ArrayList<>();
+    String sport = "Run";
 
     //MainThread
     Handler mainHandler;
@@ -108,6 +116,9 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
     //Timer
     int mCurrentPeriod = 0;
     private Timer timer;
+
+    //LocationManager
+    private LocationManager locationManager;
 
 
     // [START auth_oncreate_setup]
@@ -157,7 +168,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         SpinnerExample.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View v, int position, long id) {
-                // your code here
+                sport = (String) ((TextView)v.findViewById(R.id.sport)).getText();
             }
 
             @Override
@@ -205,6 +216,13 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(getBaseContext(), SaveActivity.class);
+                intent.putExtra("steps",steps);
+                intent.putExtra("distance", distance);
+                intent.putExtra("speed", speed);
+                intent.putExtra("speedList",speedList);
+                intent.putExtra("sport",sport);
+                startActivity(intent);
             }
         });
     }
@@ -217,12 +235,13 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
 // through the runOnUiThread method.
         this.runOnUiThread(Timer_Tick);
     }
+
     private Runnable Timer_Tick = new Runnable() {
         public void run() {
             mCurrentPeriod++;
             String temp = (new SimpleDateFormat("mm:ss")).format(new Date(
                     mCurrentPeriod * 1000));
-            ((TextView)findViewById(R.id.textTimer)).setText(temp);
+            ((TextView) findViewById(R.id.textTimer)).setText(temp);
 // This method runs in the same thread as the UI.
 // Do something to the UI thread here
 
@@ -253,10 +272,8 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         if (mClient == null && checkPermissions()) {
             mClient = new GoogleApiClient.Builder(this)
                     .addApi(Fitness.SENSORS_API)
-                    .addScope(new Scope(Scopes.FITNESS_LOCATION_READ))
-                    .addScope(Fitness.SCOPE_LOCATION_READ)
-                    .addScope(Fitness.SCOPE_ACTIVITY_READ)
-                    .addScope(Fitness.SCOPE_BODY_READ_WRITE)
+                    .addScope(Fitness.SCOPE_ACTIVITY_READ_WRITE)
+                    .addScope(Fitness.SCOPE_LOCATION_READ_WRITE)
                     .addConnectionCallbacks(
                             new GoogleApiClient.ConnectionCallbacks() {
                                 @Override
@@ -310,11 +327,9 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         // Note: Fitness.SensorsApi.findDataSources() requires the ACCESS_FINE_LOCATION permission.
         Fitness.SensorsApi.findDataSources(mClient, new DataSourcesRequest.Builder()
                 // At least one datatype must be specified.
-                .setDataTypes(/*DataType.TYPE_LOCATION_SAMPLE,
-                        DataType.TYPE_STEP_COUNT_DELTA,
-                        DataType.TYPE_DISTANCE_DELTA,*/
-                        DataType.TYPE_SPEED
-                        )
+                .setDataTypes(DataType.TYPE_LOCATION_SAMPLE,
+                        DataType.TYPE_STEP_COUNT_DELTA
+                )
                 // Can specify whether data type is raw or derived.
                 .setDataSourceTypes(DataSource.TYPE_RAW, DataSource.TYPE_DERIVED)
                 .build())
@@ -323,15 +338,12 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                     public void onResult(DataSourcesResult dataSourcesResult) {
                         Log.i(TAG, "Result: " + dataSourcesResult.getStatus().toString());
                         for (DataSource dataSource : dataSourcesResult.getDataSources()) {
-                           // Log.i(TAG, "Data source found: " + dataSource.toString());
+                            // Log.i(TAG, "Data source found: " + dataSource.toString());
                             Log.i(TAG, "Data Source type: " + dataSource.getDataType().getName());
 
                             //Let's register a listener to receive ActivityDB data!
                             if (dataSource.getDataType().equals(DataType.TYPE_LOCATION_SAMPLE) ||
-                                    dataSource.getDataType().equals(DataType.TYPE_STEP_COUNT_DELTA) ||
-                                    dataSource.getDataType().equals(DataType.TYPE_DISTANCE_DELTA) ||
-                                    dataSource.getDataType().equals(DataType.TYPE_SPEED) ||
-                                    dataSource.getDataType().equals(DataType.TYPE_CALORIES_EXPENDED)
+                                    dataSource.getDataType().equals(DataType.TYPE_STEP_COUNT_DELTA)
                                     ) {
                                 Log.i(TAG, "Registering.");
                                 registerFitnessDataListener(dataSource, dataSource.getDataType());
@@ -358,49 +370,29 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                     //android.util.Log.e(TAG, "Detected DataPoint value: " + val);
                     setValuesTextView(field.getName(), val);
                 }
-                /// MAP ADD POLYLINE
-                if (arrayListLatitude.size() > 1 && arrayListLongitude.size() > 1) {
-                    Runnable myRunnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            mMap.addPolyline(new PolylineOptions()
-                                    .add(new LatLng(arrayListLatitude.get(arrayListLatitude.size() - 2),
-                                                    arrayListLongitude.get(arrayListLongitude.size() - 2)),
-                                            new LatLng(arrayListLatitude.get(arrayListLatitude.size() - 1),
-                                                    arrayListLongitude.get(arrayListLongitude.size() - 1)))
-                                    .width(5)
-                                    .color(Color.RED));
-                            Context context = getApplicationContext();
-                            CharSequence text = "Hello toast!";
-                            int duration = Toast.LENGTH_SHORT;
-
-                            Toast toast = Toast.makeText(context, text, duration);
-                            toast.show();
-                        } // This is your code
-                    };
-                    mainHandler.post(myRunnable);
-                }
             }
         };
-        arrayListeners.add(mListener);
-        Fitness.SensorsApi.add(
-                mClient,
-                new SensorRequest.Builder()
-                        .setDataSource(dataSource) // Optional but recommended for custom data sets.
-                        .setDataType(dataType) // Can't be omitted.
-                        .setSamplingRate(3, TimeUnit.SECONDS)
-                        .build(),
-                mListener)
-                .setResultCallback(new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        if (status.isSuccess()) {
-                            Log.i(TAG, "Listener registered!");
-                        } else {
-                            Log.i(TAG, "Listener not registered.");
+        if (!arrayListeners.contains(mListener)) {
+            arrayListeners.add(mListener);
+            Fitness.SensorsApi.add(
+                    mClient,
+                    new SensorRequest.Builder()
+                            .setDataSource(dataSource) // Optional but recommended for custom data sets.
+                            .setDataType(dataType) // Can't be omitted.
+                            .setSamplingRate(2, TimeUnit.SECONDS)
+                            .build(),
+                    mListener)
+                    .setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status status) {
+                            if (status.isSuccess()) {
+                                Log.i(TAG, "Listener registered!");
+                            } else {
+                                Log.i(TAG, "Listener not registered.");
+                            }
                         }
-                    }
-                });
+                    });
+        }
         // [END register_data_listener]
     }
 
@@ -517,6 +509,9 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
+
+
+
     }
 
     /**
@@ -584,6 +579,22 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         } else {
             // Show rationale and request permission.
         }
+        //mMap.setOnMapClickListener(this);
+
+
+        // Enable LocationLayer of Google Map
+        mMap.setMyLocationEnabled(true);
+        // Getting LocationManager object from System Service LOCATION_SERVICE
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        Criteria criteria = new Criteria();
+        // Getting the name of the best provider
+        String provider = locationManager.getBestProvider(criteria,true);
+        // Getting Current Location
+        Location location = locationManager.getLastKnownLocation(provider);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+        ((TextView) findViewById(R.id.textLatitude)).setText("latitude:" + location.getLatitude());
+        ((TextView) findViewById(R.id.textLongitude)).setText("longitude:" + location.getLongitude());
     }
 
 
@@ -602,26 +613,6 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                     if (name.equals("steps")) {
                         steps += val.asInt();
                         ((TextView) findViewById(R.id.textSteps)).setText(steps + "steps");
-                        //Result = (Ves/0.4536)*Sport*Time;
-                    }
-                    if (name.equals("distance")) {
-                        distance += val.asFloat();
-                        ((TextView) findViewById(R.id.textDistance)).setText("distance: " + distance);
-                    }
-                    if (name.equals("latitude")) {
-                        latitude = val.asFloat();
-                        arrayListLatitude.add(latitude); //50.632755279541016
-                        ((TextView) findViewById(R.id.textLatitude)).setText("latitude:" + latitude);
-                    }
-                    if (name.equals("longitude")) {
-                        longitude = val.asFloat();
-                        arrayListLongitude.add(longitude); //26.2580509185791
-                        ((TextView) findViewById(R.id.textLatitude)).setText("longitude:" + longitude);
-
-                    }
-                    if (name.equals("speed")) {
-                        speed = val.asFloat();
-                        ((TextView) findViewById(R.id.textSpeed)).setText("speed:" + speed);
                     }
                 }
             };
@@ -635,7 +626,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         if(activityName.equals("walk")) {
-            
+
         }
 
         if(activityName.equals("bike")) {
@@ -643,4 +634,55 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        arrayListLatitude.add(location.getLatitude()); //50.632755279541016
+        ((TextView) findViewById(R.id.textLatitude)).setText("latitude:" + location.getLatitude());
+        arrayListLongitude.add(location.getLongitude()); //26.2580509185791
+        ((TextView) findViewById(R.id.textLatitude)).setText("longitude:" + location.getLongitude());
+        if (writeFlag) {
+            /// MAP ADD POLYLINE
+            if (arrayListLatitude.size() > 1 && arrayListLongitude.size() > 1) {
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        mMap.addPolyline(new PolylineOptions()
+                                .add(new LatLng(arrayListLatitude.get(arrayListLatitude.size() - 2),
+                                                arrayListLongitude.get(arrayListLongitude.size() - 2)),
+                                        new LatLng(arrayListLatitude.get(arrayListLatitude.size() - 1),
+                                                arrayListLongitude.get(arrayListLongitude.size() - 1)))
+                                .width(5)
+                                .color(Color.RED));
+                    }
+                };
+                mainHandler.post(myRunnable);
+            }
+            //Distance and speed
+            float[] results = new float[1];
+            if ((arrayListLongitude.size() % 2) == 0) {
+                Location.distanceBetween(arrayListLatitude.get(arrayListLatitude.size()-2), arrayListLongitude.get(arrayListLongitude.size()-2),
+                        arrayListLatitude.get(arrayListLatitude.size()-1), arrayListLongitude.get(arrayListLongitude.size()-1),results);
+                distance += results[0];
+                ((TextView) findViewById(R.id.textDistance)).setText("distance: " + distance);
+            }
+            speed = location.getSpeed();
+            speedList.add(speed);
+            ((TextView) findViewById(R.id.textSpeed)).setText("speed:" + speed);
+        }
+    }
 }
