@@ -2,10 +2,11 @@ package arthurveslo.my.myapplication;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
@@ -15,7 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -26,20 +26,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 
-import arthurveslo.my.myapplication.ComplexPreferences.ComplexPreferences;
 import arthurveslo.my.myapplication.adapters.AdapterKindsOfSport;
 import arthurveslo.my.myapplication.adapters.SpinnerModel;
 import arthurveslo.my.myapplication.common.logger.Log;
@@ -64,16 +59,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.sql.Array;
-import java.text.ParseException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -87,6 +79,7 @@ import java.util.concurrent.TimeUnit;
 public class AddActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, android.location.LocationListener {
     public static final String TAG = "BasicSensorsApi";
     private GoogleMap mMap;
+    private static Context mContext;
     // [START auth_variable_references]
     private GoogleApiClient mClient = null;
     // [END auth_variable_references]
@@ -128,7 +121,9 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         // Put application specific code here.
 
         setContentView(R.layout.activity_add);
-
+        AddActivity.setContext(this);
+        Intent intent = new Intent();
+        final String id = intent.getStringExtra("id");
         mainHandler = new Handler(getBaseContext().getMainLooper());
         // This method sets up our custom logger, which will print all log messages to the device
         // screen, as well as to adb logcat.
@@ -222,6 +217,32 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 intent.putExtra("speed", speed);
                 intent.putExtra("speedList",speedList);
                 intent.putExtra("sport",sport);
+                intent.putExtra("time", ((TextView) findViewById(R.id.textTimer)).getText());
+                intent.putExtra("id",id);
+                ContextWrapper cw = new ContextWrapper(getContext());
+                File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+                // Create imageDir
+                final File mypath=new File(directory,"map.jpg");
+
+                GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
+                    Bitmap bitmap;
+
+                    @Override
+                    public void onSnapshotReady(Bitmap snapshot) {
+                        bitmap = snapshot;
+
+
+                        try {
+                            FileOutputStream out = new FileOutputStream(mypath);
+
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                mMap.snapshot(callback);
+                intent.putExtra("map",mypath.getPath());
                 startActivity(intent);
             }
         });
@@ -593,7 +614,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         // Getting Current Location
         Location location = locationManager.getLastKnownLocation(provider);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
-        ((TextView) findViewById(R.id.textLatitude)).setText("latitude:" + location.getLatitude());
+        ((TextView) findViewById(R.id.textSport)).setText("latitude:" + location.getLatitude());
         ((TextView) findViewById(R.id.textLongitude)).setText("longitude:" + location.getLongitude());
     }
 
@@ -652,9 +673,9 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         arrayListLatitude.add(location.getLatitude()); //50.632755279541016
-        ((TextView) findViewById(R.id.textLatitude)).setText("latitude:" + location.getLatitude());
+        ((TextView) findViewById(R.id.textSport)).setText("latitude:" + location.getLatitude());
         arrayListLongitude.add(location.getLongitude()); //26.2580509185791
-        ((TextView) findViewById(R.id.textLatitude)).setText("longitude:" + location.getLongitude());
+        ((TextView) findViewById(R.id.textSport)).setText("longitude:" + location.getLongitude());
         if (writeFlag) {
             /// MAP ADD POLYLINE
             if (arrayListLatitude.size() > 1 && arrayListLongitude.size() > 1) {
@@ -682,7 +703,14 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
             }
             speed = location.getSpeed();
             speedList.add(speed);
-            ((TextView) findViewById(R.id.textSpeed)).setText("speed:" + speed);
+            ((TextView) findViewById(R.id.textAvrSpeed)).setText("speed:" + speed);
         }
+    }
+
+    public static Context getContext() {
+        return mContext;
+    }
+    public static void setContext(Context context) {
+        mContext = context;
     }
 }

@@ -34,7 +34,7 @@ public class ParametersActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*User user = new User();
+                User user = new User();
                 user.set_id(id);
                 user.set_weight(Double.parseDouble(((EditText)findViewById(R.id.editWeight)).getText().toString()));
                 user.set_height(Double.parseDouble(((EditText)findViewById(R.id.editHeight)).getText().toString()));
@@ -43,7 +43,7 @@ public class ParametersActivity extends AppCompatActivity {
                 } else {
                     user.set_sex(0);
                 }
-                db.updateUserParameters(user);*/
+                db.updateUserParameters(user);
 
                 System.out.println("Reading all contacts..");
                 List<User> users = db.getAllUsers();

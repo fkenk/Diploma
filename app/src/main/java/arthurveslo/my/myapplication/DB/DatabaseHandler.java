@@ -102,22 +102,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[] { String.valueOf(user.get_id()) });
     }
 
-    /*@Override
-    public Contact getContact(int id) {
+    public User getUser(String id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_CONTACTS, new String[] { KEY_ID,
-                        KEY_NAME, KEY_PH_NO }, KEY_ID + "=?",
+        Cursor cursor = db.query(TABLE_USERS, new String[] { KEY_ID,
+                        KEY_NAME,KEY_WEIGHT, KEY_HEIGHT, KEY_AGE, KEY_SEX, KEY_BMR}, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
 
         if (cursor != null){
             cursor.moveToFirst();
         }
 
-        Contact contact = new Contact(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2));
+        User user = new User(cursor.getString(0), cursor.getString(1), Double.parseDouble(cursor.getString(2)),
+                Double.parseDouble(cursor.getString(3)),Integer.parseInt(cursor.getString(4)),
+                Integer.parseInt(cursor.getString(5)), Double.parseDouble(cursor.getString(2)));
 
-        return contact;
-    }*/
+        return user;
+    }
 
     public List<User> getAllUsers() {
         List<User> contactList = new ArrayList<User>();
