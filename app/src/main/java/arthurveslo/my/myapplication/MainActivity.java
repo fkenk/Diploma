@@ -1,6 +1,7 @@
 package arthurveslo.my.myapplication;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import com.github.clans.fab.FloatingActionButton;
@@ -21,15 +22,26 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 import arthurveslo.my.myapplication.DB.DatabaseHandler;
 import arthurveslo.my.myapplication.DB.User;
-import arthurveslo.my.myapplication.chart.LineCardOne;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -40,6 +52,12 @@ public class MainActivity extends AppCompatActivity
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+
+    protected String[] mMonths = new String[] {
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
+    };
+    private final int itemcount = 12;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,16 +140,94 @@ public class MainActivity extends AppCompatActivity
 
 
         ////Graph
-        (new LineCardOne((CardView) findViewById(R.id.card1), this)).init();
+        //(new LineCardOne((CardView) findViewById(R.id.card1), this)).init();
+        CombinedChart mChart = (CombinedChart) findViewById(R.id.chart1);
+        mChart.setDescription("");
+        mChart.setBackgroundColor(Color.WHITE);
+        mChart.setDrawGridBackground(false);
+        mChart.setDrawBarShadow(false);
 
+        // draw bars behind lines
+        mChart.setDrawOrder(new CombinedChart.DrawOrder[] {
+                CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.BUBBLE, CombinedChart.DrawOrder.CANDLE, CombinedChart.DrawOrder.LINE, CombinedChart.DrawOrder.SCATTER
+        });
+
+        YAxis rightAxis = mChart.getAxisRight();
+        rightAxis.setDrawGridLines(false);
+        rightAxis.setAxisMinValue(0f); // this replaces setStartAtZero(true)
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setAxisMinValue(0f); // this replaces setStartAtZero(true)
+
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTH_SIDED);
+
+        CombinedData data = new CombinedData(mMonths);
+
+        data.setData(generateLineData());
+        data.setData(generateBarData());
+        mChart.setData(data);
+        mChart.invalidate();
         ///Fill list view in scroll view
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.activity_list);
-        LayoutInflater inflater = LayoutInflater.from(this);
+        //LinearLayout linearLayout = (LinearLayout) findViewById(R.id.activity_list);
+       // LayoutInflater inflater = LayoutInflater.from(this);
         /*for (item in arrayList) {
             View view  = inflater.inflate(R.layout.row, linearLayout, false);
             // set item content in view
             linearLayout.addView(view)
         }*/
+    }
+
+    private LineData generateLineData() {
+
+        LineData d = new LineData();
+
+        ArrayList<Entry> entries = new ArrayList<Entry>();
+
+        for (int index = 0; index < itemcount; index++)
+            entries.add(new Entry(getRandom(15, 10), index));
+
+        LineDataSet set = new LineDataSet(entries, "Line DataSet");
+        set.setColor(Color.rgb(240, 238, 70));
+        set.setLineWidth(2.5f);
+        set.setCircleColor(Color.rgb(240, 238, 70));
+        set.setCircleRadius(5f);
+        set.setFillColor(Color.rgb(240, 238, 70));
+        set.setDrawCubic(true);
+        set.setDrawValues(true);
+        set.setValueTextSize(10f);
+        set.setValueTextColor(Color.rgb(240, 238, 70));
+
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+
+        d.addDataSet(set);
+
+        return d;
+    }
+
+    private BarData generateBarData() {
+
+        BarData d = new BarData();
+
+        ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
+
+        for (int index = 0; index < itemcount; index++)
+            entries.add(new BarEntry(getRandom(15, 30), index));
+
+        BarDataSet set = new BarDataSet(entries, "Bar DataSet");
+        set.setColor(Color.rgb(60, 220, 78));
+        set.setValueTextColor(Color.rgb(60, 220, 78));
+        set.setValueTextSize(10f);
+        d.addDataSet(set);
+
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+
+        return d;
+    }
+
+    private float getRandom(float range, float startsfrom) {
+        return (float) (Math.random() * range) + startsfrom;
     }
 
     @Override
