@@ -14,7 +14,7 @@
         android:layout_centerInParent="true" />
 
     <TextView
-        android:id="@+id/sport"
+        android:id="@+id/distance"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_gravity="center_vertical"

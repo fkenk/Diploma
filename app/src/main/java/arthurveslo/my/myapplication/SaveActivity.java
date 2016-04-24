@@ -1,20 +1,14 @@
 package arthurveslo.my.myapplication;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,32 +17,24 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.plus.PlusShare;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import arthurveslo.my.myapplication.DB.ActivityDB;
 import arthurveslo.my.myapplication.DB.DatabaseHandler;
 import arthurveslo.my.myapplication.DB.User;
 
 public class SaveActivity extends AppCompatActivity {
+    private static final String TAG = "SaveActivity";
     //
     double calories;
     Context ctx;
     String pathMap;
-    private static final int REQ_SELECT_PHOTO = 1;
-    private static final int REQ_START_SHARE = 2;
     public Context getCtx() {
         return ctx;
     }
@@ -69,6 +55,8 @@ public class SaveActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 saveToDB();
+                Intent intent = new Intent(getCtx(), MainActivity.class);
+                startActivity(intent);
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -82,11 +70,17 @@ public class SaveActivity extends AppCompatActivity {
         pathMap = intent.getStringExtra("map");
         loadImageFromStorage(pathMap);
 
-        ((TextView)findViewById(R.id.textSteps)).setText(steps + "steps");
-        ((TextView)findViewById(R.id.textDistance)).setText(steps + "distance");
-        ((TextView)findViewById(R.id.textAvrSpeed)).setText(average(speedList) + "average speed");
-        ((TextView)findViewById(R.id.textSport)).setText(sport + "steps");
-        ((TextView)findViewById(R.id.textCalories)).setText(calcCalories(sport, time) + "calories");
+        ((TextView)findViewById(R.id.textSteps)).setText(steps+"");
+        ((TextView)findViewById(R.id.textDistance)).setText(roundResult(distance,2)+"");
+        ((TextView)findViewById(R.id.textAvrSpeed)).setText(roundResult(average(speedList),2)+"");
+        ((TextView)findViewById(R.id.textSport)).setText(sport);
+        if(sport.equals("Walk")) {
+            ((ImageView)findViewById(R.id.icon_sport)).setImageResource(R.drawable.ic_walk_white_36dp);
+        }
+        if(sport.equals("Bike")) {
+            ((ImageView)findViewById(R.id.icon_sport)).setImageResource(R.drawable.ic_bike_white_36dp);
+        }
+        ((TextView)findViewById(R.id.textCalories)).setText(roundResult(calcCalories(sport, time),2)+"");
         ((TextView)findViewById(R.id.textTime)).setText(time);
 
 
@@ -161,10 +155,41 @@ public class SaveActivity extends AppCompatActivity {
 
     }
 
+    double roundResult (double d, int precise) {
 
+        precise = 10^precise;
+        d = d*precise;
+        int i = (int) Math.round(d);
+        return (double) i/precise;
+
+    }
     private void saveToDB() {
         DatabaseHandler db = new DatabaseHandler(this);
-        db.se
+        ActivityDB activityDB = new ActivityDB();
+        activityDB.set_activity( ((TextView)findViewById(R.id.textSport)).getText().toString() );
+        activityDB.set_user_id(User.current_id);
+        activityDB.set_calories( Double.parseDouble(String.valueOf(((TextView)findViewById(R.id.textCalories)).getText())) );
+        activityDB.set_steps( Integer.parseInt(((TextView)findViewById(R.id.textSteps)).getText().toString()));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        String currentDate = sdf.format(new Date());
+        activityDB.set_date(currentDate);
+        activityDB.set_time(((TextView)findViewById(R.id.textTime)).getText().toString());
+        activityDB.set_avr_speed(Double.parseDouble(((TextView)findViewById(R.id.textAvrSpeed)).getText().toString()));
+        activityDB.set_distance(Double.parseDouble(((TextView)findViewById(R.id.textDistance)).getText().toString()));
+        db.addActivityDB(activityDB);
 
+        List<ActivityDB> users = db.getAllActivityDB();
+        for (ActivityDB user : users) {
+            String log = "Id: " + user.get_num()
+                    + " ,Act: " + user.get_activity()
+                    + " ,user id: " + user.get_user_id()
+                    + " ,calories : " + user.get_calories()
+                    + " ,steps : " + user.get_steps()
+                    + " ,date: " + user.get_date()
+                    + " ,time: " + user.get_time()
+                    + " ,avr speed: " + user.get_avr_speed()
+                    + " ,distace: " + user.get_distance();
+            Log.d(TAG, log);
+        }
     }
 }

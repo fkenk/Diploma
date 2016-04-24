@@ -103,7 +103,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_USER_ID, activityDB.get_user_id());
         values.put(KEY_CALORIES,activityDB.get_calories());
         values.put(KEY_STEPS, activityDB.get_steps());
-        values.put(KEY_DATE,activityDB.get_date()));
+        values.put(KEY_DATE,activityDB.get_date());
         values.put(KEY_TIME,activityDB.get_time());
         values.put(KEY_AVR_SPEED,activityDB.get_avr_speed());
         values.put(KEY_DISTANCE,activityDB.get_distance());

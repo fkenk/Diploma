@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity
         /////Get data from login
 
         Intent intent = getIntent();
-        final String id = intent.getStringExtra("id");
         String name = intent.getStringExtra("name");
         String e_mail = intent.getStringExtra("e_mail");
         String photo_url = intent.getStringExtra("photo_url");
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity
 
         /////DataBase
         DatabaseHandler db = new DatabaseHandler(this);
-        db.addUser(new User(name, id)); ///if user exists
+        db.addUser(new User(name, User.current_id)); ///if user exists
 
         System.out.println("Reading all contacts..");
         List<User> users = db.getAllUsers();
