@@ -2,7 +2,6 @@ package arthurveslo.my.myapplication;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -13,7 +12,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -37,7 +35,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
 import arthurveslo.my.myapplication.adapters.AdapterKindsOfSport;
-import arthurveslo.my.myapplication.adapters.SpinnerModel;
+import arthurveslo.my.myapplication.adapters.SpinnerModelKindOfSports;
 import arthurveslo.my.myapplication.common.logger.Log;
 import arthurveslo.my.myapplication.common.logger.LogView;
 import arthurveslo.my.myapplication.common.logger.LogWrapper;
@@ -142,25 +140,25 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
 
         ///spinner
 
-        final Spinner SpinnerExample = (Spinner) findViewById(R.id.spinner);
+        final Spinner SpinnerKindOfSports = (Spinner) findViewById(R.id.spinner);
 
         // Set data in arraylist
 
         // Resources passed to adapter to get image
         Resources res = getResources();
 
-        final ArrayList<SpinnerModel> spinnerModels = new ArrayList<>();
-        spinnerModels.add(new SpinnerModel("Run", "ic_run_black_48dp"));
-        spinnerModels.add(new SpinnerModel("Walk", "ic_walk_white_36dp"));
-        spinnerModels.add(new SpinnerModel("Bike", "ic_bike_black_24dp"));
+        final ArrayList<SpinnerModelKindOfSports> spinnerModels = new ArrayList<>();
+        spinnerModels.add(new SpinnerModelKindOfSports("Run", "ic_run_black_48dp"));
+        spinnerModels.add(new SpinnerModelKindOfSports("Walk", "ic_walk_white_36dp"));
+        spinnerModels.add(new SpinnerModelKindOfSports("Bike", "ic_bike_black_24dp"));
         // Create custom adapter object ( see below CustomAdapter.java )
-        AdapterKindsOfSport adapter = new AdapterKindsOfSport(this, R.layout.spinner_rows, spinnerModels, res);
+        AdapterKindsOfSport adapter = new AdapterKindsOfSport(this, R.layout.spinner_kind_of_sports, spinnerModels, res);
 
         // Set adapter to spinner
-        SpinnerExample.setAdapter(adapter);
+        SpinnerKindOfSports.setAdapter(adapter);
 
         // Listener called when spinner item selected
-        SpinnerExample.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        SpinnerKindOfSports.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View v, int position, long id) {
                 sport = (String) ((TextView)v.findViewById(R.id.sport)).getText();
@@ -184,7 +182,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 playBtn.setVisibility(View.GONE);
                 pauseBtn.setVisibility(View.VISIBLE);
                 writeFlag = true;
-                setLayout(spinnerModels.get(SpinnerExample.getSelectedItemPosition()).getActivityName());
+                setLayout(spinnerModels.get(SpinnerKindOfSports.getSelectedItemPosition()).getActivityName());
                 timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override

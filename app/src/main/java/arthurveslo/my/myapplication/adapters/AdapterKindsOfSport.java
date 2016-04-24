@@ -23,7 +23,7 @@ public class AdapterKindsOfSport extends ArrayAdapter<String> {
     private Activity activity;
     private ArrayList data;
     public Resources res;
-    SpinnerModel tempValues = null;
+    SpinnerModelKindOfSports tempValues = null;
     LayoutInflater inflater;
 
     public AdapterKindsOfSport(
@@ -57,12 +57,12 @@ public class AdapterKindsOfSport extends ArrayAdapter<String> {
     // This funtion called for each row ( Called data.size() times )
     public View getCustomView(int position, View convertView, ViewGroup parent) {
 
-        /********** Inflate spinner_rows.xml file for each row  ************/
-        View row = inflater.inflate(R.layout.spinner_rows, parent, false);
+        /********** Inflate spinner_kind_of_sports_of_sports.xml file for each row  ************/
+        View row = inflater.inflate(R.layout.spinner_kind_of_sports, parent, false);
 
         /***** Get each Model object from Arraylist ********/
         tempValues = null;
-        tempValues = (SpinnerModel) data.get(position);
+        tempValues = (SpinnerModelKindOfSports) data.get(position);
 
         TextView label = (TextView) row.findViewById(R.id.sport);
         ImageView img = (ImageView) row.findViewById(R.id.image);

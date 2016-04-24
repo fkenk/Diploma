@@ -3,12 +3,12 @@ package arthurveslo.my.myapplication.adapters;
 /**
  * Created by User on 16.04.2016.
  */
-public class SpinnerModel {
+public class SpinnerModelKindOfSports {
 
     private  String activityName="";
     private  String image="";
 
-    public SpinnerModel(String companyName, String image) {
+    public SpinnerModelKindOfSports(String companyName, String image) {
         activityName = companyName;
         this.image = image;
     }

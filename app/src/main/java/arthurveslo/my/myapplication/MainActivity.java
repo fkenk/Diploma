@@ -7,6 +7,7 @@ import com.github.clans.fab.FloatingActionButton;
 
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
@@ -122,6 +124,15 @@ public class MainActivity extends AppCompatActivity
 
         ////Graph
         (new LineCardOne((CardView) findViewById(R.id.card1), this)).init();
+
+        ///Fill list view in scroll view
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.activity_list);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        /*for (item in arrayList) {
+            View view  = inflater.inflate(R.layout.row, linearLayout, false);
+            // set item content in view
+            linearLayout.addView(view)
+        }*/
     }
 
     @Override
