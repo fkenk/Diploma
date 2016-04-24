@@ -35,6 +35,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_CALORIES = "calories";
     private static final String KEY_STEPS = "steps";
     private static final String KEY_DATE = "date";
+    private static final String KEY_TIME = "time" ;
+    private static final String KEY_AVR_SPEED = "avr_speed";
+    private static final String KEY_DISTANCE = "distance";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -59,6 +62,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_CALORIES + " REAL,"
                 + KEY_STEPS + " INTEGER,"
                 + KEY_DATE + " TEXT,"
+                + KEY_TIME + " TEXT,"
+                + KEY_AVR_SPEED + " REAL,"
+                + KEY_DISTANCE + " REAL,"
                 + " FOREIGN KEY ("+KEY_USER_ID+") REFERENCES "+TABLE_USERS+"("+KEY_ID+"));";
         db.execSQL(CREATE_ACTIVITIES_TABLE);
     }
@@ -83,6 +89,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_BMR, user.get_BMR());
         try {
             db.insertOrThrow(TABLE_USERS, null, values);
+        } catch (Exception e) {
+            Log.e(TAG, String.valueOf(e));
+        }
+        db.close();
+    }
+
+    public void addActivityDB(ActivityDB activityDB){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_ACTIVITY,activityDB.get_activity());
+        values.put(KEY_USER_ID, activityDB.get_user_id());
+        values.put(KEY_CALORIES,activityDB.get_calories());
+        values.put(KEY_STEPS, activityDB.get_steps());
+        values.put(KEY_DATE,activityDB.get_date()));
+        values.put(KEY_TIME,activityDB.get_time());
+        values.put(KEY_AVR_SPEED,activityDB.get_avr_speed());
+        values.put(KEY_DISTANCE,activityDB.get_distance());
+        try {
+            db.insertOrThrow(TABLE_ACTIVITIES, null, values);
         } catch (Exception e) {
             Log.e(TAG, String.valueOf(e));
         }
@@ -121,7 +147,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public List<User> getAllUsers() {
-        List<User> contactList = new ArrayList<User>();
+        List<User> userList = new ArrayList<User>();
         String selectQuery = "SELECT  * FROM " + TABLE_USERS;
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -136,10 +162,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 user.set_age(Integer.parseInt(cursor.getString(4)));
                 user.set_sex(Integer.parseInt(cursor.getString(5)));
                 user.set_BMR(Double.parseDouble(cursor.getString(6)));
-                contactList.add(user);
+                userList.add(user);
             } while (cursor.moveToNext());
         }
-        return contactList;
+        return userList;
+    }
+
+    public List<ActivityDB> getAllActivityDB() {
+        List<ActivityDB> activitiesList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM " + TABLE_ACTIVITIES;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                ActivityDB activityDB = new ActivityDB();
+                activityDB.set_num(Integer.parseInt(cursor.getString(0)));
+                activityDB.set_activity(cursor.getString(1));
+                activityDB.set_user_id(cursor.getString(2));
+                activityDB.set_calories(Double.parseDouble(cursor.getString(3)));
+                activityDB.set_steps(Integer.parseInt(cursor.getString(4)));
+                activityDB.set_date(cursor.getString(5));
+                activityDB.set_time(cursor.getString(6));
+                activityDB.set_avr_speed(Double.parseDouble(cursor.getString(7)));
+                activityDB.set_distance(Double.parseDouble(cursor.getString(8)));
+                activitiesList.add(activityDB);
+            } while (cursor.moveToNext());
+        }
+        return activitiesList;
     }
 /*
     @Override
