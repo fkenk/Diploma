@@ -115,7 +115,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         User user = new User(cursor.getString(0), cursor.getString(1), Double.parseDouble(cursor.getString(2)),
                 Double.parseDouble(cursor.getString(3)),Integer.parseInt(cursor.getString(4)),
-                Integer.parseInt(cursor.getString(5)), Double.parseDouble(cursor.getString(2)));
+                Integer.parseInt(cursor.getString(5)), Double.parseDouble(cursor.getString(6)));
 
         return user;
     }

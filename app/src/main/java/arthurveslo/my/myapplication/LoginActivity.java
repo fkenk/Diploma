@@ -19,6 +19,8 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import arthurveslo.my.myapplication.DB.User;
+
 public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
@@ -121,7 +123,7 @@ public class LoginActivity extends AppCompatActivity implements
             GoogleSignInAccount acct = result.getSignInAccount();
             mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getId()));
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("id", acct.getId());
+            User.current_id = acct.getId();
             intent.putExtra("name", acct.getDisplayName());
             intent.putExtra("photo_url",acct.getPhotoUrl());
             Log.d(TAG, String.valueOf(acct.getPhotoUrl()));

@@ -11,6 +11,8 @@
 
     //fit api
     <dimen name="margin_medium">16dp</dimen>
-    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="app_bar_height">140dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="card_toolbar_btn">40dp</dimen>
+    <dimen name="card_view_roundcorner">0dp</dimen>
 </resources>

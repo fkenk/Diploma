@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import com.github.clans.fab.FloatingActionButton;
+
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -25,6 +27,7 @@ import java.util.List;
 
 import arthurveslo.my.myapplication.DB.DatabaseHandler;
 import arthurveslo.my.myapplication.DB.User;
+import arthurveslo.my.myapplication.chart.LineCardOne;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity
 
         /////DataBase
         DatabaseHandler db = new DatabaseHandler(this);
-        db.addUser(new User(name, id));
+        db.addUser(new User(name, id)); ///if user exists
 
         System.out.println("Reading all contacts..");
         List<User> users = db.getAllUsers();
@@ -100,7 +103,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), ParametersActivity.class);
-                intent.putExtra("id",id);
                 startActivity(intent);
             }
         });
@@ -109,7 +111,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), AddActivity.class);
-                intent.putExtra("id",id);
                 startActivity(intent);
             }
         });
@@ -117,6 +118,10 @@ public class MainActivity extends AppCompatActivity
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+
+        ////Graph
+        (new LineCardOne((CardView) findViewById(R.id.card1), this)).init();
     }
 
     @Override

@@ -4,7 +4,7 @@ package arthurveslo.my.myapplication.DB;
  * Created by User on 13.04.2016.
  */
 public class User {
-
+    public static String current_id;
     String _id = null;
     String _name = null;
     double _weight = 0;

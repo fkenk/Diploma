@@ -13,6 +13,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -122,8 +123,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
 
         setContentView(R.layout.activity_add);
         AddActivity.setContext(this);
-        Intent intent = new Intent();
-        final String id = intent.getStringExtra("id");
+
         mainHandler = new Handler(getBaseContext().getMainLooper());
         // This method sets up our custom logger, which will print all log messages to the device
         // screen, as well as to adb logcat.
@@ -211,6 +211,9 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                writeFlag = false;
+                arrayListLatitude.clear();
+                arrayListLongitude.clear();
                 Intent intent = new Intent(getBaseContext(), SaveActivity.class);
                 intent.putExtra("steps",steps);
                 intent.putExtra("distance", distance);
@@ -218,11 +221,10 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 intent.putExtra("speedList",speedList);
                 intent.putExtra("sport",sport);
                 intent.putExtra("time", ((TextView) findViewById(R.id.textTimer)).getText());
-                intent.putExtra("id",id);
-                ContextWrapper cw = new ContextWrapper(getContext());
-                File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+               /* ContextWrapper cw = new ContextWrapper(getContext());
+                File directory = cw.getDir(getExternalFilesDir(null), Context.MODE_WORLD_READABLE);*/
                 // Create imageDir
-                final File mypath=new File(directory,"map.jpg");
+                final File file = new File(getContext().getExternalFilesDir(null),mMap.hashCode()+".jpg");
 
                 GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
                     Bitmap bitmap;
@@ -233,7 +235,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
                         try {
-                            FileOutputStream out = new FileOutputStream(mypath);
+                            FileOutputStream out = new FileOutputStream(file);
 
                             bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
                         } catch (Exception e) {
@@ -242,7 +244,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                 };
                 mMap.snapshot(callback);
-                intent.putExtra("map",mypath.getPath());
+                intent.putExtra("map",file.getPath());
                 startActivity(intent);
             }
         });

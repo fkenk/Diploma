@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import arthurveslo.my.myapplication.DB.User;
 public class ParametersActivity extends AppCompatActivity {
 
     private static final String TAG = "ParametersActivity" ;
+    final DatabaseHandler db = new DatabaseHandler(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,16 +28,13 @@ public class ParametersActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Intent intent = getIntent();
-        final String id = intent.getStringExtra("id");
 
-        final DatabaseHandler db = new DatabaseHandler(this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 User user = new User();
-                user.set_id(id);
+                user.set_id(User.current_id);
                 user.set_weight(Double.parseDouble(((EditText)findViewById(R.id.editWeight)).getText().toString()));
                 user.set_height(Double.parseDouble(((EditText)findViewById(R.id.editHeight)).getText().toString()));
                 if(((RadioButton)findViewById(R.id.radioMale)).isChecked()){
@@ -55,8 +54,24 @@ public class ParametersActivity extends AppCompatActivity {
                             + " ,Height: " + user1.get_height();
                     Log.d(TAG, log);
                 }
+                finish();
             }
         });
+        setLayoutParams();
+    }
+
+    private void setLayoutParams() {
+        double weight = db.getUser(User.current_id).get_weight();
+        double height = db.getUser(User.current_id).get_height();
+        int sex = db.getUser(User.current_id).get_sex();
+        Log.d(TAG, String.valueOf(weight));
+        if(sex == 1){
+            ((RadioButton)findViewById(R.id.radioMale)).setChecked(true);
+        } else {
+            ((RadioButton)findViewById(R.id.radioMale)).setChecked(true);
+        }
+        ((TextView)findViewById(R.id.editWeight)).setText(String.valueOf(weight));
+        ((TextView)findViewById(R.id.editHeight)).setText(String.valueOf(height));
     }
 
 }
