@@ -196,7 +196,6 @@ public class MainActivity extends AppCompatActivity
         }*/
 // Находим наш list
 
-        addDataToSpinner();
     }
 
     private void addDataToSpinner() {
@@ -429,5 +428,11 @@ public class MainActivity extends AppCompatActivity
         );
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        addDataToSpinner();
     }
 }

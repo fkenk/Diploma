@@ -1,6 +1,7 @@
 package arthurveslo.my.myapplication;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,27 +23,30 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import arthurveslo.my.myapplication.DB.ActivityDB;
+import arthurveslo.my.myapplication.DB.DatabaseHandler;
 import arthurveslo.my.myapplication.wrapper.SetImageForSport;
 
 public class ShowActivity extends AppCompatActivity {
 
+    Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        setContext(this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final ActivityDB model = (ActivityDB) getIntent().getSerializableExtra("activity");
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                DatabaseHandler db = new DatabaseHandler(getContext());
+                db.deleteActivityDB(model);
+                onBackPressed();
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        final ActivityDB model = (ActivityDB) getIntent().getSerializableExtra("activity");
 
         ((TextView)findViewById(R.id.textSteps)).setText(model.get_steps()+"");
         ((TextView)findViewById(R.id.textDistance)).setText(model.get_distance()+"");
@@ -98,4 +102,11 @@ public class ShowActivity extends AppCompatActivity {
 
     }
 
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
 }

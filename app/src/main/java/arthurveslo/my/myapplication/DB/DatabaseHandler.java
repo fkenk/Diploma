@@ -300,6 +300,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return foos;
     }
+
+    public void deleteActivityDB(ActivityDB activity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_ACTIVITIES, KEY_ACTIVITIES_ID + " = ?", new String[] { String.valueOf(activity.get_num()) });
+        db.close();
+    }
 /*
     @Override
     public int updateContact(Contact contact) {
