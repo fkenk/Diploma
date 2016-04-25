@@ -174,7 +174,9 @@ public class SaveActivity extends AppCompatActivity {
         activityDB.set_date(currentDate);
         activityDB.set_time(((TextView)findViewById(R.id.textTime)).getText().toString());
         activityDB.set_avr_speed(Double.parseDouble(((TextView)findViewById(R.id.textAvrSpeed)).getText().toString()));
-        activityDB.set_distance(Double.parseDouble(((TextView)findViewById(R.id.textDistance)).getText().toString()));
+        sdf = new SimpleDateFormat("HH:mm");
+        String currentTime = sdf.format(new Date());
+        activityDB.set_cur_time(currentTime);
         db.addActivityDB(activityDB);
 
         List<ActivityDB> users = db.getAllActivityDB();

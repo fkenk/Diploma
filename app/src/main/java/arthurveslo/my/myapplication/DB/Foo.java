@@ -1,11 +1,16 @@
 package arthurveslo.my.myapplication.DB;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by User on 25.04.2016.
  */
 public class Foo {
+    private String title;
+    private List<ActivityDB> children;
+    private HashMap<String, Double> selector = new HashMap<>();
 
     public String getTitle() {
         return title;
@@ -14,9 +19,6 @@ public class Foo {
     public void setTitle(String title) {
         this.title = title;
     }
-
-    private String title;
-    private List<ActivityDB> children;
 
     public void setChildren(List<ActivityDB> children) {
         this.children = children;

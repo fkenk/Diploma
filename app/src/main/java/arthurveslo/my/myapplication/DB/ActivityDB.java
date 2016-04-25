@@ -13,9 +13,10 @@ public class ActivityDB {
     String _time;
     double _avr_speed;
     double _distance;
+    String _cur_time;
 
 
-    public ActivityDB(double _distance, String _time, double _avr_speed, String _date, int _steps, double _calories, String _user_id, String _activity) {
+    public ActivityDB(double _distance, String _time, double _avr_speed, String _date, int _steps, double _calories, String _user_id, String _activity, String _cur_time) {
         this._distance = _distance;
         this._time = _time;
         this._avr_speed = _avr_speed;
@@ -24,6 +25,7 @@ public class ActivityDB {
         this._calories = _calories;
         this._user_id = _user_id;
         this._activity = _activity;
+        this._cur_time = _cur_time;
     }
 
     public ActivityDB() {
@@ -99,5 +101,13 @@ public class ActivityDB {
 
     public void set_distance(double _distance) {
         this._distance = _distance;
+    }
+
+    public String get_cur_time() {
+        return _cur_time;
+    }
+
+    public void set_cur_time(String _cur_time) {
+        this._cur_time = _cur_time;
     }
 }

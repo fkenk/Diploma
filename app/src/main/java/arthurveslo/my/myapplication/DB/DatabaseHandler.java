@@ -16,7 +16,7 @@ import java.util.List;
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHandler";
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "mainDB";
     /// TABLE USERS
     private static final String TABLE_USERS = "users";
@@ -38,6 +38,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_TIME = "time" ;
     private static final String KEY_AVR_SPEED = "avr_speed";
     private static final String KEY_DISTANCE = "distance";
+    private static final String CURRENT_TIME = "cur_time";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -65,6 +66,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_TIME + " TEXT,"
                 + KEY_AVR_SPEED + " REAL,"
                 + KEY_DISTANCE + " REAL,"
+                + CURRENT_TIME + " REAL,"
                 + " FOREIGN KEY ("+KEY_USER_ID+") REFERENCES "+TABLE_USERS+"("+KEY_ID+"));";
         db.execSQL(CREATE_ACTIVITIES_TABLE);
     }
@@ -107,6 +109,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_TIME,activityDB.get_time());
         values.put(KEY_AVR_SPEED,activityDB.get_avr_speed());
         values.put(KEY_DISTANCE,activityDB.get_distance());
+        values.put(CURRENT_TIME, activityDB.get_cur_time());
         try {
             db.insertOrThrow(TABLE_ACTIVITIES, null, values);
         } catch (Exception e) {
@@ -187,6 +190,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 activityDB.set_time(cursor.getString(6));
                 activityDB.set_avr_speed(Double.parseDouble(cursor.getString(7)));
                 activityDB.set_distance(Double.parseDouble(cursor.getString(8)));
+                activityDB.set_cur_time(cursor.getString(9));
                 activitiesList.add(activityDB);
             } while (cursor.moveToNext());
         }
@@ -230,6 +234,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         activityDB.set_time(cursor.getString(6));
                         activityDB.set_avr_speed(Double.parseDouble(cursor.getString(7)));
                         activityDB.set_distance(Double.parseDouble(cursor.getString(8)));// fetch data from columns
+                        activityDB.set_cur_time(cursor.getString(9));
                         children.add(activityDB);
                     }
                 } while (cursor.moveToNext());

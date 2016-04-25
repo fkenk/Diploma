@@ -96,15 +96,15 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
         }
 
         TextView textChild = (TextView) convertView.findViewById(R.id.textChild);
-        textChild.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_time());
+        textChild.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_cur_time());
 
-        Button button = (Button)convertView.findViewById(R.id.buttonChild);
+       /* Button button = (Button)convertView.findViewById(R.id.buttonChild);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(mContext,"button is pressed",5000).show();
             }
-        });
+        });*/
 
         return convertView;
     }
