@@ -1,5 +1,6 @@
 package arthurveslo.my.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity
 
     DatabaseHandler db;
     List<Foo> foos;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        setContext(this);
        /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -243,11 +245,23 @@ public class MainActivity extends AppCompatActivity
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 foos = db.fillFoo(foos);
                 /////Expandable L}ist
-                ExpandableListView listView = (ExpandableListView)findViewById(R.id.expandable_list);
+                ExpandableListView expandableList = (ExpandableListView)findViewById(R.id.expandable_list);
                 //Создаем набор данных для адаптера
                 //Создаем адаптер и передаем context и список с данными
-                ExpListAdapter adapterExpList = new ExpListAdapter(getApplicationContext(), foos, (String) ((TextView)selectedItemView.findViewById(android.R.id.text1)).getText());
-                listView.setAdapter(adapterExpList);
+                final ExpListAdapter adapterExpList = new ExpListAdapter(getApplicationContext(), foos, (String) ((TextView)selectedItemView.findViewById(android.R.id.text1)).getText());
+                expandableList.setAdapter(adapterExpList);
+                expandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+                    @Override
+                    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                        //Nothing here ever fires
+                        ActivityDB activityDB = (ActivityDB)adapterExpList.getChild(groupPosition,childPosition);
+                        Intent intent = new Intent(getContext(), ShowActivity.class);
+                        intent.putExtra("activity", activityDB);
+                        startActivity(intent);
+                        return true;
+                    }
+                });
             }
 
             @Override
@@ -310,6 +324,14 @@ public class MainActivity extends AppCompatActivity
 
     private float getRandom(float range, float startsfrom) {
         return (float) (Math.random() * range) + startsfrom;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     @Override

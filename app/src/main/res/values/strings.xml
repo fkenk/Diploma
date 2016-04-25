@@ -153,4 +153,5 @@
     <string name="title_activity_parametrs">ParametrsActivity</string>
     <string name="char_label">lalalala</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_show">ShowActivity</string>
 </resources>

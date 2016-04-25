@@ -85,7 +85,16 @@
         <activity
             android:name=".Main2Activity"
             android:label="@string/title_activity_main2"
-            android:theme="@style/MaterialTheme.NoActionBar"></activity>
+            android:theme="@style/MaterialTheme.NoActionBar" />
+        <activity
+            android:name=".ShowActivity"
+            android:label="@string/title_activity_show"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/MaterialTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="arthurveslo.my.myapplication.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

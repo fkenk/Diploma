@@ -83,7 +83,7 @@ public class SaveActivity extends AppCompatActivity {
         SetImageForSport.set_Image(((ImageView)findViewById(R.id.icon_sport)), sport);
 
         Log.e(TAG + "CALORIES", roundResult(calcCalories(sport, time),2) + "");
-        ((TextView)findViewById(R.id.textCalories)).setText(roundResult(calcCalories(sport, time),2)+"");
+        ((TextView)findViewById(R.id.textCalories)).setText(roundResult(calcCalories(sport, time),4)+"");
         ((TextView)findViewById(R.id.textTime)).setText(time);
 
 
@@ -174,6 +174,7 @@ public class SaveActivity extends AppCompatActivity {
         activityDB.set_date(currentDate);
         activityDB.set_time(((TextView)findViewById(R.id.textTime)).getText().toString());
         activityDB.set_avr_speed(Double.parseDouble(((TextView)findViewById(R.id.textAvrSpeed)).getText().toString()));
+        activityDB.set_distance(Double.parseDouble(((TextView)findViewById(R.id.textDistance)).getText().toString()));
         sdf = new SimpleDateFormat("HH:mm");
         String currentTime = sdf.format(new Date());
         activityDB.set_cur_time(currentTime);
@@ -182,7 +183,7 @@ public class SaveActivity extends AppCompatActivity {
         } else {
             activityDB.set_address(address);
         }
-
+        activityDB.set_map(pathMap);
         db.addActivityDB(activityDB);
 
         List<ActivityDB> users = db.getAllActivityDB();

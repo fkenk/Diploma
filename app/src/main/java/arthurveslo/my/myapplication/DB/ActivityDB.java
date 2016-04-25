@@ -1,9 +1,14 @@
 package arthurveslo.my.myapplication.DB;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
 /**
  * Created by User on 13.04.2016.
  */
-public class ActivityDB {
+public class ActivityDB implements Serializable {
     int _num;
     String _activity;
     String _user_id;
