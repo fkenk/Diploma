@@ -76,14 +76,14 @@ public class SaveActivity extends AppCompatActivity {
         loadImageFromStorage(pathMap);
 
         ((TextView)findViewById(R.id.textSteps)).setText(steps+"");
-        ((TextView)findViewById(R.id.textDistance)).setText(roundResult(distance,2)+"");
-        ((TextView)findViewById(R.id.textAvrSpeed)).setText(roundResult(average(speedList),2)+"");
+        ((TextView)findViewById(R.id.textDistance)).setText(roundResult(distance,1)+"");
+        ((TextView)findViewById(R.id.textAvrSpeed)).setText(roundResult(average(speedList),1)+"");
         ((TextView)findViewById(R.id.textLatitude)).setText(sport);
         ///Set image
         SetImageForSport.set_Image(((ImageView)findViewById(R.id.icon_sport)), sport);
 
         Log.e(TAG + "CALORIES", roundResult(calcCalories(sport, time),2) + "");
-        ((TextView)findViewById(R.id.textCalories)).setText(roundResult(calcCalories(sport, time),4)+"");
+        ((TextView)findViewById(R.id.textCalories)).setText(roundResult(calcCalories(sport, time),1)+"");
         ((TextView)findViewById(R.id.textTime)).setText(time);
 
 

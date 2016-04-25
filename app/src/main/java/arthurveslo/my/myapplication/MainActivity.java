@@ -43,7 +43,10 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,11 +70,17 @@ public class MainActivity extends AppCompatActivity
     protected String[] mMonths = new String[] {
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
     };
-    private final int itemcount = 12;
 
+    protected ArrayList<String> dDays = new ArrayList<>();
+    private final int itemcount = 12;
+    boolean flag = false;
     DatabaseHandler db;
     List<Foo> foos;
     Context context;
+    CombinedData data; // for chart
+
+    Spinner spinnerDate;
+    Spinner spinnerSelector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +164,29 @@ public class MainActivity extends AppCompatActivity
 
         ////Graph
         //(new LineCardOne((CardView) findViewById(R.id.card1), this)).init();
+
+
+// Находим наш list
+        /*ArrayList<BarEntry> entriesIncome = new ArrayList<>();
+        HashMap<Integer, Float> sumForDaysIncomes = new HashMap();
+        java.util.Date currentDate = new java.util.Date();
+
+        SimpleDateFormat mf = new SimpleDateFormat("MM");
+        SimpleDateFormat yf = new SimpleDateFormat("yyyy");
+        Calendar mycal = new GregorianCalendar(Integer.parseInt(yf.format(currentDate)), Integer.parseInt(mf.format(currentDate)) - 1, 1);
+        int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);*/
+
+        java.util.Date currentDate = new java.util.Date();
+        SimpleDateFormat mf = new SimpleDateFormat("MM");
+        SimpleDateFormat yf = new SimpleDateFormat("yyyy");
+        Calendar mycal = new GregorianCalendar(Integer.parseInt(yf.format(currentDate)), Integer.parseInt(mf.format(currentDate)) - 1, 1);
+        int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        for (int i = 1; i <= daysInMonth; i++) {
+            dDays.add(""+i);
+        }
+
+    }
+    private void chart() {
         CombinedChart mChart = (CombinedChart) findViewById(R.id.chart1);
         mChart.setDescription("");
         mChart.setBackgroundColor(Color.WHITE);
@@ -177,40 +209,69 @@ public class MainActivity extends AppCompatActivity
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTH_SIDED);
 
-        CombinedData data = new CombinedData(mMonths);
 
-        data.setData(generateLineData());
-        data.setData(generateBarData());
+
+        /*ПРОСТО МЕГА КОСТИЛЬ*/
+        CombinedData data = null;
+        if(spinnerDate.getSelectedItem().toString().equals("Days")) {
+            if (data != null) {
+                data.clearValues();
+            }
+            data = new CombinedData(dDays);
+        }
+        if(spinnerDate.getSelectedItem().toString().equals("Month")){
+            if (data != null) {
+                data.clearValues();
+            }
+            data = new CombinedData(mMonths);
+        }
+        if(data == null) {
+            data = new CombinedData(dDays);
+        }
+        data.setData(generateBarData(
+                spinnerDate.getSelectedItem().toString(),
+                spinnerSelector.getSelectedItem().toString()));
         mChart.setData(data);
         mChart.invalidate();
-        ///Fill list view in scroll view
-        /*LinearLayout linearLayout = (LinearLayout) findViewById(R.id.activity_list);
-        LayoutInflater inflater = LayoutInflater.from(this);
-        List<ActivityDB> activityList;
-        activityList = db.getAllActivityDB();
-        for (ActivityDB item : activityList) {
-            View view  = inflater.inflate(R.layout.sport_row, linearLayout, false);
-            // set item content in view
-            ((TextView)view.findViewById(R.id.distance)).setText(item.get_steps()+"");
-            linearLayout.addView(view);
-        }*/
-// Находим наш list
-
     }
 
+    private BarData generateBarData(String date, String selector) {
+
+        BarData d = new BarData();
+
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        if(date.equals("Month")) {
+            for (int index = 0; index < mMonths.length; index++)
+                entries.add(new BarEntry((float) db.getMonthActivityDB(index + 1, selector), index));
+        }
+
+        if(date.equals("Day")) {
+            for (int index = 0; index < dDays.size(); index++)
+                entries.add(new BarEntry((float) db.getDayActivityDB(index + 1, selector), index));
+        }
+        BarDataSet set = new BarDataSet(entries, "Bar DataSet");
+        set.setColor(Color.rgb(60, 220, 78));
+        set.setValueTextColor(Color.rgb(60, 220, 78));
+        set.setValueTextSize(10f);
+        d.addDataSet(set);
+
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+
+        return d;
+    }
     private void addDataToSpinner() {
 
 
         ////////////////////1
-        Spinner spinner = (Spinner) findViewById(R.id.spinnerDate);
+        spinnerDate = (Spinner) findViewById(R.id.spinnerDate);
 // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.date_array, android.R.layout.simple_spinner_item);
 // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerDate.setAdapter(adapter);
+        spinnerDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 if(position == 0) {
@@ -219,11 +280,8 @@ public class MainActivity extends AppCompatActivity
                 if(position == 1) {
                     foos = db.getUniqueMonthActivityDB();
                 }
-                if(position == 2) {
-                    foos = db.getUniqueYearActivityDB();
-                }
+                chart();
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
@@ -231,15 +289,12 @@ public class MainActivity extends AppCompatActivity
         });
 
         /////////////////2
-        spinner = (Spinner) findViewById(R.id.spinnerSelector);
-// Create an ArrayAdapter using the string array and a default spinner layout
-        adapter = ArrayAdapter.createFromResource(this,
+        spinnerSelector = (Spinner) findViewById(R.id.spinnerSelector);
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
                 R.array.date_selector, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSelector.setAdapter(adapter2);
+        spinnerSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 foos = db.fillFoo(foos);
@@ -247,13 +302,14 @@ public class MainActivity extends AppCompatActivity
                 ExpandableListView expandableList = (ExpandableListView)findViewById(R.id.expandable_list);
                 //Создаем набор данных для адаптера
                 //Создаем адаптер и передаем context и список с данными
-                final ExpListAdapter adapterExpList = new ExpListAdapter(getApplicationContext(), foos, (String) ((TextView)selectedItemView.findViewById(android.R.id.text1)).getText());
+                final ExpListAdapter adapterExpList = new ExpListAdapter(getContext(), foos,
+                        (String) ((TextView)selectedItemView.findViewById(android.R.id.text1)).getText());
                 expandableList.setAdapter(adapterExpList);
-                expandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-
+               expandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
                     @Override
                     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                         //Nothing here ever fires
+
                         ActivityDB activityDB = (ActivityDB)adapterExpList.getChild(groupPosition,childPosition);
                         Intent intent = new Intent(getContext(), ShowActivity.class);
                         intent.putExtra("activity", activityDB);
@@ -261,6 +317,8 @@ public class MainActivity extends AppCompatActivity
                         return true;
                     }
                 });
+                chart();
+
             }
 
             @Override
@@ -268,12 +326,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-
-
-
     }
-
-
     private LineData generateLineData() {
 
         LineData d = new LineData();
@@ -301,25 +354,6 @@ public class MainActivity extends AppCompatActivity
         return d;
     }
 
-    private BarData generateBarData() {
-
-        BarData d = new BarData();
-
-        ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
-
-        for (int index = 0; index < itemcount; index++)
-            entries.add(new BarEntry(getRandom(15, 30), index));
-
-        BarDataSet set = new BarDataSet(entries, "Bar DataSet");
-        set.setColor(Color.rgb(60, 220, 78));
-        set.setValueTextColor(Color.rgb(60, 220, 78));
-        set.setValueTextSize(10f);
-        d.addDataSet(set);
-
-        set.setAxisDependency(YAxis.AxisDependency.LEFT);
-
-        return d;
-    }
 
     private float getRandom(float range, float startsfrom) {
         return (float) (Math.random() * range) + startsfrom;
@@ -434,5 +468,6 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         addDataToSpinner();
+        //chart();
     }
 }

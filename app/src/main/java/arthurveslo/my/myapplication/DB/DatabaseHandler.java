@@ -208,6 +208,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         List<Foo> foos = new ArrayList<>();
         String selectQuery = "SELECT DISTINCT "+KEY_DATE+" FROM " + TABLE_ACTIVITIES;
 
+
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
@@ -222,13 +223,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public List<Foo> getUniqueMonthActivityDB() {
         List<Foo> foos = new ArrayList<>();
-        String selectQuery = "SELECT "+KEY_DATE+" FROM " + TABLE_ACTIVITIES;
+        String selectQuery = "SELECT DISTINCT "+KEY_DATE+" FROM " + TABLE_ACTIVITIES;
+
         ArrayList<String> months = new ArrayList<>();
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
+
         if (cursor.moveToFirst()) {
             do {
-                if(months.contains(cursor.getString(0).split("\\.")[1])) {
+                if(!months.contains(cursor.getString(0).split("\\.")[1])) {
                     months.add(cursor.getString(0).split("\\.")[1]);
                     Foo foo = new Foo();
                     foo.setTitle(cursor.getString(0));
@@ -238,6 +241,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return foos;
     }
+
+
 
     public List<Foo> getUniqueYearActivityDB() {
         List<Foo> foos = new ArrayList<>();
@@ -305,6 +310,89 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ACTIVITIES, KEY_ACTIVITIES_ID + " = ?", new String[] { String.valueOf(activity.get_num()) });
         db.close();
+    }
+
+    public double getMonthActivityDB(int month, String selector){
+        String selectQuery = "SELECT * FROM " + TABLE_ACTIVITIES;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        double value = 0.0;
+        if (cursor.moveToFirst()) {
+            do {
+                if(Integer.parseInt(cursor.getString(5).split("\\.")[1]) == month) {
+                    ActivityDB activityDB = new ActivityDB();
+                    activityDB.set_num(Integer.parseInt(cursor.getString(0)));
+                    activityDB.set_activity(cursor.getString(1));
+                    activityDB.set_user_id(cursor.getString(2));
+                    activityDB.set_calories(Double.parseDouble(cursor.getString(3)));
+                    activityDB.set_steps(Integer.parseInt(cursor.getString(4)));
+                    activityDB.set_date(cursor.getString(5));
+                    activityDB.set_time(cursor.getString(6));
+                    activityDB.set_avr_speed(Double.parseDouble(cursor.getString(7)));
+                    activityDB.set_distance(Double.parseDouble(cursor.getString(8)));
+                    activityDB.set_cur_time(cursor.getString(9));
+                    activityDB.set_address(cursor.getString(10));
+                    activityDB.set_map(cursor.getString(11));
+                    if(selector.equals("Distance")) {
+                        value += Double.parseDouble(cursor.getString(8));
+                    }
+                    if(selector.equals("Steps")) {
+                        value += Integer.parseInt(cursor.getString(4));
+                    }
+                    if(selector.equals("Calories")) {
+                        value += Double.parseDouble(cursor.getString(3));
+                    }
+                    if(selector.equals("Avr.Speed")) {
+                        value += Double.parseDouble(cursor.getString(7));
+                    }
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return value;
+    }
+
+    public double getDayActivityDB(int day, String selector) {
+        String selectQuery = "SELECT * FROM " + TABLE_ACTIVITIES;
+        ArrayList<ActivityDB> activitiesList = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        double value = 0.0;
+        if (cursor.moveToFirst()) {
+            do {
+                if(Integer.parseInt(cursor.getString(5).split("\\.")[0]) == day) {
+                    ActivityDB activityDB = new ActivityDB();
+                    activityDB.set_num(Integer.parseInt(cursor.getString(0)));
+                    activityDB.set_activity(cursor.getString(1));
+                    activityDB.set_user_id(cursor.getString(2));
+                    activityDB.set_calories(Double.parseDouble(cursor.getString(3)));
+                    activityDB.set_steps(Integer.parseInt(cursor.getString(4)));
+                    activityDB.set_date(cursor.getString(5));
+                    activityDB.set_time(cursor.getString(6));
+                    activityDB.set_avr_speed(Double.parseDouble(cursor.getString(7)));
+                    activityDB.set_distance(Double.parseDouble(cursor.getString(8)));
+                    activityDB.set_cur_time(cursor.getString(9));
+                    activityDB.set_address(cursor.getString(10));
+                    activityDB.set_map(cursor.getString(11));
+                    activitiesList.add(activityDB);
+                    if(selector.equals("Distance")) {
+                        value += Double.parseDouble(cursor.getString(8));
+                    }
+                    if(selector.equals("Steps")) {
+                        value += Integer.parseInt(cursor.getString(4));
+                    }
+                    if(selector.equals("Calories")) {
+                        value += Double.parseDouble(cursor.getString(3));
+                    }
+                    if(selector.equals("Avr.Speed")) {
+                        value += Double.parseDouble(cursor.getString(7));
+                    }
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return value;
     }
 /*
     @Override

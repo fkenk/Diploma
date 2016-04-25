@@ -108,18 +108,18 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
         +" "+ ((ActivityDB) getChild(groupPosition,childPosition)).get_cur_time());
 
 
-        TextView textSelectot = (TextView) convertView.findViewById(R.id.textSelector);
+        TextView textSelector = (TextView) convertView.findViewById(R.id.textSelector);
         if(mSelector.equals("Distance")) {
-            textSelectot.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_distance() + "");
+            textSelector.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_distance() + "");
         }
         if(mSelector.equals("Steps")) {
-            textSelectot.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_steps() + "");
+            textSelector.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_steps() + "");
         }
         if(mSelector.equals("Calories")) {
-            textSelectot.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_calories() + "");
+            textSelector.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_calories() + "");
         }
         if(mSelector.equals("Avr.Speed")) {
-            textSelectot.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_avr_speed() + "");
+            textSelector.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_avr_speed() + "");
         }
 
 
