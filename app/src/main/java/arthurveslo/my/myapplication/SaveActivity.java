@@ -35,6 +35,8 @@ public class SaveActivity extends AppCompatActivity {
     double calories;
     Context ctx;
     String pathMap;
+    ArrayList<Double> speedList;
+
     public Context getCtx() {
         return ctx;
     }
@@ -64,7 +66,7 @@ public class SaveActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int steps = intent.getIntExtra("steps", 0);
         double distance = intent.getDoubleExtra("distance", 0.0);
-        ArrayList<Double> speedList = (ArrayList<Double>) getIntent().getSerializableExtra("speedList");
+        speedList = (ArrayList<Double>) getIntent().getSerializableExtra("speedList");
         String sport = intent.getStringExtra("sport");
         String time = intent.getStringExtra("time");
         pathMap = intent.getStringExtra("map");
@@ -73,13 +75,14 @@ public class SaveActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.textSteps)).setText(steps+"");
         ((TextView)findViewById(R.id.textDistance)).setText(roundResult(distance,2)+"");
         ((TextView)findViewById(R.id.textAvrSpeed)).setText(roundResult(average(speedList),2)+"");
-        ((TextView)findViewById(R.id.textSport)).setText(sport);
+        ((TextView)findViewById(R.id.textLatitude)).setText(sport);
         if(sport.equals("Walk")) {
             ((ImageView)findViewById(R.id.icon_sport)).setImageResource(R.drawable.ic_walk_white_36dp);
         }
         if(sport.equals("Bike")) {
             ((ImageView)findViewById(R.id.icon_sport)).setImageResource(R.drawable.ic_bike_white_36dp);
         }
+        Log.e(TAG + "CALORIES", roundResult(calcCalories(sport, time),2) + "");
         ((TextView)findViewById(R.id.textCalories)).setText(roundResult(calcCalories(sport, time),2)+"");
         ((TextView)findViewById(R.id.textTime)).setText(time);
 
@@ -127,17 +130,13 @@ public class SaveActivity extends AppCompatActivity {
         DatabaseHandler db = new DatabaseHandler(this);
         User user = db.getUser(User.current_id);
         double weight = user.get_weight();
-        if(sport.equals("Run")) {
-            return (weight/0.4536)*3.5*minute;
-        }
-        if(sport.equals("Walk")) {
-            return (weight/0.4536)*1.65*minute;
-        }
+
         if(sport.equals("Bike")) {
             return (weight/0.4536)*2.93*minute;
         }
 
-        return 0;
+        double VO2 = (0.2 * average(speedList)) + 3.5;
+        return 5.0 * user.get_weight() * VO2 / 1000;
     }
     private void loadImageFromStorage(String path)
     {
@@ -166,7 +165,7 @@ public class SaveActivity extends AppCompatActivity {
     private void saveToDB() {
         DatabaseHandler db = new DatabaseHandler(this);
         ActivityDB activityDB = new ActivityDB();
-        activityDB.set_activity( ((TextView)findViewById(R.id.textSport)).getText().toString() );
+        activityDB.set_activity( ((TextView)findViewById(R.id.textLatitude)).getText().toString() );
         activityDB.set_user_id(User.current_id);
         activityDB.set_calories( Double.parseDouble(String.valueOf(((TextView)findViewById(R.id.textCalories)).getText())) );
         activityDB.set_steps( Integer.parseInt(((TextView)findViewById(R.id.textSteps)).getText().toString()));

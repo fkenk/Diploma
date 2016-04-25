@@ -19,7 +19,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.CombinedChart;
@@ -38,10 +40,15 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import arthurveslo.my.myapplication.DB.ActivityDB;
 import arthurveslo.my.myapplication.DB.DatabaseHandler;
+import arthurveslo.my.myapplication.DB.Foo;
 import arthurveslo.my.myapplication.DB.User;
+import arthurveslo.my.myapplication.adapters.ExpListAdapter;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -59,6 +66,9 @@ public class MainActivity extends AppCompatActivity
     private final int itemcount = 12;
 
 
+    public void setExpandebleListView(){
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,14 +180,33 @@ public class MainActivity extends AppCompatActivity
         mChart.setData(data);
         mChart.invalidate();
         ///Fill list view in scroll view
-        //LinearLayout linearLayout = (LinearLayout) findViewById(R.id.activity_list);
-       // LayoutInflater inflater = LayoutInflater.from(this);
-        /*for (item in arrayList) {
-            View view  = inflater.inflate(R.layout.row, linearLayout, false);
+        /*LinearLayout linearLayout = (LinearLayout) findViewById(R.id.activity_list);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        List<ActivityDB> activityList;
+        activityList = db.getAllActivityDB();
+        for (ActivityDB item : activityList) {
+            View view  = inflater.inflate(R.layout.sport_row, linearLayout, false);
             // set item content in view
-            linearLayout.addView(view)
+            ((TextView)view.findViewById(R.id.distance)).setText(item.get_steps()+"");
+            linearLayout.addView(view);
         }*/
+// Находим наш list
+
+
+        ExpandableListView listView = (ExpandableListView)findViewById(R.id.expandable_list);
+
+        //Создаем набор данных для адаптера
+        List<Foo> foos;
+        foos = db.getUniqueDateActivityDB();
+        foos = db.fillFoo(foos);
+
+        //Создаем адаптер и передаем context и список с данными
+        ExpListAdapter adapter = new ExpListAdapter(getApplicationContext(), foos);
+        listView.setAdapter(adapter);
     }
+
+
+
 
     private LineData generateLineData() {
 

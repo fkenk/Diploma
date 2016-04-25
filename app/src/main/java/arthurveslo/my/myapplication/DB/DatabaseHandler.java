@@ -165,6 +165,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 userList.add(user);
             } while (cursor.moveToNext());
         }
+
         return userList;
     }
 
@@ -190,6 +191,61 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         return activitiesList;
+    }
+    public List<Foo> getUniqueDateActivityDB() {
+        List<Foo> foos = new ArrayList<>();
+        String selectQuery = "SELECT DISTINCT "+KEY_DATE+" FROM " + TABLE_ACTIVITIES;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                Foo foo = new Foo();
+                foo.setTitle(cursor.getString(0));
+                foos.add(foo);
+            } while (cursor.moveToNext());
+        }
+        return foos;
+    }
+
+    public List<Foo> fillFoo(List<Foo> foos) {
+        String selectQuery = "SELECT  * FROM " + TABLE_ACTIVITIES;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        List<ActivityDB> children = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            for (Foo item: foos) {
+                // search proper child for current item
+                do {
+                    // if current row date value equals with current item datetime
+                    if (item.getTitle().equals(cursor.getString(5))) {
+
+                        ActivityDB activityDB = new ActivityDB();
+                        activityDB.set_num(Integer.parseInt(cursor.getString(0)));
+                        activityDB.set_activity(cursor.getString(1));
+                        activityDB.set_user_id(cursor.getString(2));
+                        activityDB.set_calories(Double.parseDouble(cursor.getString(3)));
+                        activityDB.set_steps(Integer.parseInt(cursor.getString(4)));
+                        activityDB.set_date(cursor.getString(5));
+                        activityDB.set_time(cursor.getString(6));
+                        activityDB.set_avr_speed(Double.parseDouble(cursor.getString(7)));
+                        activityDB.set_distance(Double.parseDouble(cursor.getString(8)));// fetch data from columns
+                        children.add(activityDB);
+                    }
+                } while (cursor.moveToNext());
+
+                // assign created children into current item
+                item.setChildren(children);
+
+                // reset List that will be used for next item
+                children = null;
+                children = new ArrayList<ActivityDB>();
+
+                // reset Cursor and move it to first row again
+                cursor.moveToFirst();
+            }
+        }
+        return foos;
     }
 /*
     @Override

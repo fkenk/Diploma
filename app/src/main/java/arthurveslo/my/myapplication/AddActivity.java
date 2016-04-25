@@ -614,8 +614,10 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         // Getting Current Location
         Location location = locationManager.getLastKnownLocation(provider);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
-        ((TextView) findViewById(R.id.textSport)).setText("latitude:" + location.getLatitude());
-        ((TextView) findViewById(R.id.textLongitude)).setText("longitude:" + location.getLongitude());
+        if(location != null) {
+            ((TextView) findViewById(R.id.textLatitude)).setText("latitude:" + location.getLatitude());
+            ((TextView) findViewById(R.id.textLongitude)).setText("longitude:" + location.getLongitude());
+        }
     }
 
 
@@ -673,9 +675,9 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         arrayListLatitude.add(location.getLatitude()); //50.632755279541016
-        ((TextView) findViewById(R.id.textSport)).setText("latitude:" + location.getLatitude());
+        ((TextView) findViewById(R.id.textLatitude)).setText("latitude:" + location.getLatitude());
         arrayListLongitude.add(location.getLongitude()); //26.2580509185791
-        ((TextView) findViewById(R.id.textSport)).setText("longitude:" + location.getLongitude());
+        ((TextView) findViewById(R.id.textLongitude)).setText("longitude:" + location.getLongitude());
         if (writeFlag) {
             /// MAP ADD POLYLINE
             if (arrayListLatitude.size() > 1 && arrayListLongitude.size() > 1) {

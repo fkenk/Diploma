@@ -29,7 +29,7 @@
             android:layout_alignBottom="@+id/imageView3" />
 
         <TextView
-            android:id="@+id/textSport"
+            android:id="@+id/textLatitude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/icon_sport"
@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/imageView2"
-            android:layout_below="@+id/textSport"
+            android:layout_below="@+id/textLatitude"
             android:layout_toEndOf="@+id/imageView2"
             android:gravity="center"
             android:text="calories:"
@@ -115,7 +115,7 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:src="@drawable/point_objects_36"
-            android:layout_alignBottom="@+id/textSport"
+            android:layout_alignBottom="@+id/textLatitude"
             android:layout_centerHorizontal="true" />
 
         <ImageView
@@ -135,7 +135,7 @@
             android:src="@drawable/ic_fire_white_36dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_below="@+id/textSport"
+            android:layout_below="@+id/textLatitude"
             android:layout_alignParentStart="true" />
 
         <ImageView
