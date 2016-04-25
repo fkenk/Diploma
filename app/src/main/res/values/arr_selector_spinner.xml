@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="date_selector">
+        <item>Distance</item>
+        <item>Steps</item>
+        <item>Calories</item>
+        <item>Avr.Speed</item>
+    </string-array>
+</resources>

@@ -10,7 +10,7 @@ import java.util.Map;
 public class Foo {
     private String title;
     private List<ActivityDB> children;
-    private HashMap<String, Double> selector = new HashMap<>();
+    private static  HashMap<String, Double> selector = new HashMap<>();
 
     public String getTitle() {
         return title;
@@ -26,5 +26,13 @@ public class Foo {
 
     public List<ActivityDB> getChildren() {
         return children;
+    }
+
+    public static HashMap<String, Double> getSelector() {
+        return selector;
+    }
+
+    public static void setSelector(HashMap<String, Double> selector) {
+        Foo.selector = selector;
     }
 }

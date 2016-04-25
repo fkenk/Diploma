@@ -18,10 +18,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.SimpleExpandableListAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.CombinedChart;
@@ -65,10 +68,9 @@ public class MainActivity extends AppCompatActivity
     };
     private final int itemcount = 12;
 
+    DatabaseHandler db;
+    List<Foo> foos;
 
-    public void setExpandebleListView(){
-
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity
 
 
         /////DataBase
-        DatabaseHandler db = new DatabaseHandler(this);
+        db = new DatabaseHandler(this);
         db.addUser(new User(name, User.current_id)); ///if user exists
 
         System.out.println("Reading all contacts..");
@@ -192,20 +194,71 @@ public class MainActivity extends AppCompatActivity
         }*/
 // Находим наш list
 
-
-        ExpandableListView listView = (ExpandableListView)findViewById(R.id.expandable_list);
-
-        //Создаем набор данных для адаптера
-        List<Foo> foos;
-        foos = db.getUniqueDateActivityDB();
-        foos = db.fillFoo(foos);
-
-        //Создаем адаптер и передаем context и список с данными
-        ExpListAdapter adapter = new ExpListAdapter(getApplicationContext(), foos);
-        listView.setAdapter(adapter);
+        addDataToSpinner();
     }
 
+    private void addDataToSpinner() {
 
+
+        ////////////////////1
+        Spinner spinner = (Spinner) findViewById(R.id.spinnerDate);
+// Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.date_array, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if(position == 0) {
+                    foos = db.getUniqueDateActivityDB();
+                }
+                if(position == 1) {
+                    foos = db.getUniqueMonthActivityDB();
+                }
+                if(position == 2) {
+                    foos = db.getUniqueYearActivityDB();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        /////////////////2
+        spinner = (Spinner) findViewById(R.id.spinnerSelector);
+// Create an ArrayAdapter using the string array and a default spinner layout
+        adapter = ArrayAdapter.createFromResource(this,
+                R.array.date_selector, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                foos = db.fillFoo(foos);
+                /////Expandable L}ist
+                ExpandableListView listView = (ExpandableListView)findViewById(R.id.expandable_list);
+                //Создаем набор данных для адаптера
+                //Создаем адаптер и передаем context и список с данными
+                ExpListAdapter adapterExpList = new ExpListAdapter(getApplicationContext(), foos, (String) ((TextView)selectedItemView.findViewById(android.R.id.text1)).getText());
+                listView.setAdapter(adapterExpList);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+
+    }
 
 
     private LineData generateLineData() {

@@ -220,6 +220,44 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return foos;
     }
 
+    public List<Foo> getUniqueMonthActivityDB() {
+        List<Foo> foos = new ArrayList<>();
+        String selectQuery = "SELECT "+KEY_DATE+" FROM " + TABLE_ACTIVITIES;
+        ArrayList<String> months = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                if(months.contains(cursor.getString(0).split("\\.")[1])) {
+                    months.add(cursor.getString(0).split("\\.")[1]);
+                    Foo foo = new Foo();
+                    foo.setTitle(cursor.getString(0));
+                    foos.add(foo);
+                }
+            } while (cursor.moveToNext());
+        }
+        return foos;
+    }
+
+    public List<Foo> getUniqueYearActivityDB() {
+        List<Foo> foos = new ArrayList<>();
+        String selectQuery = "SELECT "+KEY_DATE+" FROM " + TABLE_ACTIVITIES;
+        ArrayList<String> months = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                if(months.contains(cursor.getString(0).split("\\.")[2])) {
+                    months.add(cursor.getString(0).split("\\.")[2]);
+                    Foo foo = new Foo();
+                    foo.setTitle(cursor.getString(0));
+                    foos.add(foo);
+                }
+            } while (cursor.moveToNext());
+        }
+        return foos;
+    }
+
     public List<Foo> fillFoo(List<Foo> foos) {
         String selectQuery = "SELECT  * FROM " + TABLE_ACTIVITIES;
         SQLiteDatabase db = this.getWritableDatabase();

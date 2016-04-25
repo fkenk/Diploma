@@ -27,10 +27,11 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
 
     private ArrayList<Foo> mGroups;
     private Context mContext;
-
-    public ExpListAdapter (Context context, List<Foo> groups){
+    private String mSelector;
+    public ExpListAdapter (Context context, List<Foo> groups, String selector){
         mContext = context;
         mGroups = (ArrayList<Foo>) groups;
+        mSelector = selector;
     }
 
     @Override
@@ -103,7 +104,25 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
                 ((ActivityDB) getChild(groupPosition,childPosition)).get_activity());
         TextView textChild = (TextView) convertView.findViewById(R.id.textChild);
         textChild.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_address()
-        + ((ActivityDB) getChild(groupPosition,childPosition)).get_cur_time());
+        +" "+ ((ActivityDB) getChild(groupPosition,childPosition)).get_cur_time());
+
+
+        TextView textSelectot = (TextView) convertView.findViewById(R.id.textSelector);
+        if(mSelector.equals("Distance")) {
+            textSelectot.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_distance() + "");
+        }
+        if(mSelector.equals("Steps")) {
+            textSelectot.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_steps() + "");
+        }
+        if(mSelector.equals("Calories")) {
+            textSelectot.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_calories() + "");
+        }
+        if(mSelector.equals("Avr.Speed")) {
+            textSelectot.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_avr_speed() + "");
+        }
+
+
+
 
        /* Button button = (Button)convertView.findViewById(R.id.buttonChild);
         button.setOnClickListener(new View.OnClickListener() {
