@@ -37,6 +37,7 @@ public class SaveActivity extends AppCompatActivity {
     Context ctx;
     String pathMap;
     ArrayList<Double> speedList;
+    String address;
 
     public Context getCtx() {
         return ctx;
@@ -71,6 +72,7 @@ public class SaveActivity extends AppCompatActivity {
         String sport = intent.getStringExtra("sport");
         String time = intent.getStringExtra("time");
         pathMap = intent.getStringExtra("map");
+        address = intent.getStringExtra("address");
         loadImageFromStorage(pathMap);
 
         ((TextView)findViewById(R.id.textSteps)).setText(steps+"");
@@ -175,6 +177,12 @@ public class SaveActivity extends AppCompatActivity {
         sdf = new SimpleDateFormat("HH:mm");
         String currentTime = sdf.format(new Date());
         activityDB.set_cur_time(currentTime);
+        if(address == null) {
+            activityDB.set_address("");
+        } else {
+            activityDB.set_address(address);
+        }
+
         db.addActivityDB(activityDB);
 
         List<ActivityDB> users = db.getAllActivityDB();

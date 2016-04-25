@@ -102,7 +102,8 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
         SetImageForSport.set_Image(((ImageView) convertView.findViewById(R.id.imageSport)),
                 ((ActivityDB) getChild(groupPosition,childPosition)).get_activity());
         TextView textChild = (TextView) convertView.findViewById(R.id.textChild);
-        textChild.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_cur_time());
+        textChild.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_address()
+        + ((ActivityDB) getChild(groupPosition,childPosition)).get_cur_time());
 
        /* Button button = (Button)convertView.findViewById(R.id.buttonChild);
         button.setOnClickListener(new View.OnClickListener() {

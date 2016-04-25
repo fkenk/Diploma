@@ -14,6 +14,8 @@ public class ActivityDB {
     double _avr_speed;
     double _distance;
     String _cur_time;
+    String _address;
+    String _map;
 
 
     public ActivityDB(double _distance, String _time, double _avr_speed, String _date, int _steps, double _calories, String _user_id, String _activity, String _cur_time) {
@@ -109,5 +111,21 @@ public class ActivityDB {
 
     public void set_cur_time(String _cur_time) {
         this._cur_time = _cur_time;
+    }
+
+    public String get_address() {
+        return _address;
+    }
+
+    public void set_address(String _address) {
+        this._address = _address;
+    }
+
+    public String get_map() {
+        return _map;
+    }
+
+    public void set_map(String _map) {
+        this._map = _map;
     }
 }

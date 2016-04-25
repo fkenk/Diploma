@@ -7,7 +7,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -62,9 +64,12 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -98,7 +103,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
     double speed = 0.0;
     ArrayList<Double> speedList = new ArrayList<>();
     String sport = "Run";
-
+    String address;
     //MainThread
     Handler mainHandler;
 
@@ -219,6 +224,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 intent.putExtra("speedList",speedList);
                 intent.putExtra("sport",sport);
                 intent.putExtra("time", ((TextView) findViewById(R.id.textTimer)).getText());
+                intent.putExtra("address", address);
                /* ContextWrapper cw = new ContextWrapper(getContext());
                 File directory = cw.getDir(getExternalFilesDir(null), Context.MODE_WORLD_READABLE);*/
                 // Create imageDir
@@ -678,6 +684,17 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         ((TextView) findViewById(R.id.textLatitude)).setText("latitude:" + location.getLatitude());
         arrayListLongitude.add(location.getLongitude()); //26.2580509185791
         ((TextView) findViewById(R.id.textLongitude)).setText("longitude:" + location.getLongitude());
+        Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            if (addresses.size() > 0)
+                address = addresses.get(0).getLocality();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (addresses.size() > 0)
+            System.out.println(addresses.get(0).getLocality());
         if (writeFlag) {
             /// MAP ADD POLYLINE
             if (arrayListLatitude.size() > 1 && arrayListLongitude.size() > 1) {
