@@ -161,7 +161,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         SpinnerKindOfSports.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View v, int position, long id) {
-                sport = (String) ((TextView)v.findViewById(R.id.distance)).getText();
+                sport = (String) ((TextView)v.findViewById(R.id.textSport)).getText();
             }
 
             @Override

@@ -28,6 +28,7 @@ import java.util.List;
 import arthurveslo.my.myapplication.DB.ActivityDB;
 import arthurveslo.my.myapplication.DB.DatabaseHandler;
 import arthurveslo.my.myapplication.DB.User;
+import arthurveslo.my.myapplication.wrapper.SetImageForSport;
 
 public class SaveActivity extends AppCompatActivity {
     private static final String TAG = "SaveActivity";
@@ -76,12 +77,9 @@ public class SaveActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.textDistance)).setText(roundResult(distance,2)+"");
         ((TextView)findViewById(R.id.textAvrSpeed)).setText(roundResult(average(speedList),2)+"");
         ((TextView)findViewById(R.id.textLatitude)).setText(sport);
-        if(sport.equals("Walk")) {
-            ((ImageView)findViewById(R.id.icon_sport)).setImageResource(R.drawable.ic_walk_white_36dp);
-        }
-        if(sport.equals("Bike")) {
-            ((ImageView)findViewById(R.id.icon_sport)).setImageResource(R.drawable.ic_bike_white_36dp);
-        }
+        ///Set image
+        SetImageForSport.set_Image(((ImageView)findViewById(R.id.icon_sport)), sport);
+
         Log.e(TAG + "CALORIES", roundResult(calcCalories(sport, time),2) + "");
         ((TextView)findViewById(R.id.textCalories)).setText(roundResult(calcCalories(sport, time),2)+"");
         ((TextView)findViewById(R.id.textTime)).setText(time);

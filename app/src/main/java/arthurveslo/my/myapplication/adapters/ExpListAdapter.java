@@ -6,8 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.images.ImageManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +18,7 @@ import java.util.List;
 import arthurveslo.my.myapplication.DB.ActivityDB;
 import arthurveslo.my.myapplication.DB.Foo;
 import arthurveslo.my.myapplication.R;
+import arthurveslo.my.myapplication.wrapper.SetImageForSport;
 
 /**
  * Created by User on 25.04.2016.
@@ -95,6 +99,8 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.child_view, null);
         }
 
+        SetImageForSport.set_Image(((ImageView) convertView.findViewById(R.id.imageSport)),
+                ((ActivityDB) getChild(groupPosition,childPosition)).get_activity());
         TextView textChild = (TextView) convertView.findViewById(R.id.textChild);
         textChild.setText(((ActivityDB) getChild(groupPosition,childPosition)).get_cur_time());
 

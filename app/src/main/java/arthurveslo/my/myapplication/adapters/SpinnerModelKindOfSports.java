@@ -8,8 +8,8 @@ public class SpinnerModelKindOfSports {
     private  String activityName="";
     private  String image="";
 
-    public SpinnerModelKindOfSports(String companyName, String image) {
-        activityName = companyName;
+    public SpinnerModelKindOfSports(String sportName, String image) {
+        activityName = sportName;
         this.image = image;
     }
 
