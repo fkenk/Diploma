@@ -18,6 +18,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
 import arthurveslo.my.myapplication.DB.User;
 
@@ -50,6 +52,7 @@ public class LoginActivity extends AppCompatActivity implements
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestProfile()
                 .build();
         // [END configure_signin]
 
@@ -121,6 +124,7 @@ public class LoginActivity extends AppCompatActivity implements
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
+
             mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getId()));
             Intent intent = new Intent(this, MainActivity.class);
             User.current_id = acct.getId();

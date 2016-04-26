@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import com.github.clans.fab.FloatingActionButton;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,10 +24,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -40,7 +43,12 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 
 
 import java.text.SimpleDateFormat;
@@ -56,9 +64,11 @@ import arthurveslo.my.myapplication.DB.DatabaseHandler;
 import arthurveslo.my.myapplication.DB.Foo;
 import arthurveslo.my.myapplication.DB.User;
 import arthurveslo.my.myapplication.adapters.ExpListAdapter;
+import arthurveslo.my.myapplication.async.DownloadImageTask;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "MainActivity";
     /**
@@ -81,6 +91,7 @@ public class MainActivity extends AppCompatActivity
 
     Spinner spinnerDate;
     Spinner spinnerSelector;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +146,7 @@ public class MainActivity extends AppCompatActivity
                 .execute(photo_url);*/
 //        Log.d(TAG, photo_url);
         TextView textViewName = (TextView) headerView.findViewById(R.id.display_name);
-        textViewName.setText(photo_url);
+        textViewName.setText(name);
         TextView textViewEMAIL = (TextView)  headerView.findViewById(R.id.display_e_mail);
         textViewEMAIL.setText(e_mail);
 
@@ -185,6 +196,34 @@ public class MainActivity extends AppCompatActivity
             dDays.add(""+i);
         }
 
+        // [START configure_signin]
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestProfile()
+                .build();
+        // [END configure_signin]
+
+        // [START build_client]
+        // Build a GoogleApiClient with access to the Google Sign-In API and the
+        // options specified by gso.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+    }
+
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        Intent intent = new Intent(getContext(), LoginActivity.class);
+                        startActivity(intent);
+                    }
+                });
     }
     private void chart() {
         CombinedChart mChart = (CombinedChart) findViewById(R.id.chart1);
@@ -406,7 +445,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+                    signOut();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -469,5 +508,10 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         addDataToSpinner();
         //chart();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }
