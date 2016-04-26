@@ -2,9 +2,11 @@ package arthurveslo.my.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+
 import com.github.clans.fab.FloatingActionButton;
 
 import android.support.annotation.NonNull;
@@ -71,13 +73,14 @@ public class MainActivity extends AppCompatActivity
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "MainActivity";
+    private static final String MY_PREFS_NAME = "plan";
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
 
-    protected String[] mMonths = new String[] {
+    protected String[] mMonths = new String[]{
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
     };
 
@@ -118,7 +121,6 @@ public class MainActivity extends AppCompatActivity
         String photo_url = intent.getStringExtra("photo_url");
 
 
-
         /////DataBase
         db = new DatabaseHandler(this);
         db.addUser(new User(name, User.current_id)); ///if user exists
@@ -138,7 +140,7 @@ public class MainActivity extends AppCompatActivity
 //        Log.d(TAG, photo_url);
         TextView textViewName = (TextView) headerView.findViewById(R.id.display_name);
         textViewName.setText(name);
-        TextView textViewEMAIL = (TextView)  headerView.findViewById(R.id.display_e_mail);
+        TextView textViewEMAIL = (TextView) headerView.findViewById(R.id.display_e_mail);
         textViewEMAIL.setText(e_mail);
 
         ///////////////go to add activity
@@ -215,7 +217,7 @@ public class MainActivity extends AppCompatActivity
         Calendar mycal = new GregorianCalendar(Integer.parseInt(yf.format(currentDate)), Integer.parseInt(mf.format(currentDate)) - 1, 1);
         int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);
         for (int i = 1; i <= daysInMonth; i++) {
-            dDays.add(""+i);
+            dDays.add("" + i);
         }
     }
 
@@ -238,7 +240,7 @@ public class MainActivity extends AppCompatActivity
         mChart.setDrawBarShadow(false);
 
         // draw bars behind lines
-        mChart.setDrawOrder(new CombinedChart.DrawOrder[] {
+        mChart.setDrawOrder(new CombinedChart.DrawOrder[]{
                 CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.BUBBLE, CombinedChart.DrawOrder.CANDLE, CombinedChart.DrawOrder.LINE, CombinedChart.DrawOrder.SCATTER
         });
 
@@ -257,21 +259,24 @@ public class MainActivity extends AppCompatActivity
 
         /*ПРОСТО МЕГА КОСТИЛЬ*/
         CombinedData data = null;
-        if(spinnerDate.getSelectedItem().toString().equals("Days")) {
+        if (spinnerDate.getSelectedItem().toString().equals("Days")) {
             if (data != null) {
                 data.clearValues();
             }
             data = new CombinedData(dDays);
         }
-        if(spinnerDate.getSelectedItem().toString().equals("Month")){
+        if (spinnerDate.getSelectedItem().toString().equals("Month")) {
             if (data != null) {
                 data.clearValues();
             }
             data = new CombinedData(mMonths);
         }
-        if(data == null) {
+        if (data == null) {
             data = new CombinedData(dDays);
         }
+        data.setData(generateLineData(
+                spinnerDate.getSelectedItem().toString(),
+                spinnerSelector.getSelectedItem().toString()));
         data.setData(generateBarData(
                 spinnerDate.getSelectedItem().toString(),
                 spinnerSelector.getSelectedItem().toString()));
@@ -284,12 +289,12 @@ public class MainActivity extends AppCompatActivity
         BarData d = new BarData();
 
         ArrayList<BarEntry> entries = new ArrayList<>();
-        if(date.equals("Month")) {
+        if (date.equals("Month")) {
             for (int index = 0; index < mMonths.length; index++)
                 entries.add(new BarEntry((float) db.getMonthActivityDB(index + 1, selector), index));
         }
 
-        if(date.equals("Day")) {
+        if (date.equals("Day")) {
             for (int index = 0; index < dDays.size(); index++)
                 entries.add(new BarEntry((float) db.getDayActivityDB(index + 1, selector), index));
         }
@@ -303,6 +308,52 @@ public class MainActivity extends AppCompatActivity
 
         return d;
     }
+
+    private LineData generateLineData(String date, String selector) {
+
+        LineData d = new LineData();
+
+        ArrayList<Entry> entries = new ArrayList<Entry>();
+        float data = 0;
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        if (selector.equals("Calories")) {
+            data = prefs.getFloat("calories", (float) 0.0);
+        }
+        if (selector.equals("Distance")) {
+            data = prefs.getFloat("distance", (float) 0.0);
+        }
+        if (selector.equals("Steps")) {
+            data = prefs.getFloat("steps", (float) 0.0);
+        }
+        if (selector.equals("Avr.Speed")) {
+            data = prefs.getFloat("avr_speed", (float) 0.0);
+        }
+
+        if (date.equals("Month")) {
+            for (int index = 0; index < mMonths.length; index++)
+                entries.add(new Entry(data, index));
+        }
+
+        if (date.equals("Day")) {
+            for (int index = 0; index < dDays.size(); index++)
+                entries.add(new Entry(data, index));
+        }
+
+        LineDataSet set = new LineDataSet(entries, "Line DataSet");
+        set.setColor(Color.rgb(240, 238, 70));
+        set.setLineWidth(2.5f);
+        set.setCircleColor(Color.rgb(240, 238, 70));
+        set.setCircleRadius(3f);
+        set.setFillColor(Color.rgb(240, 238, 70));
+        set.setDrawCubic(true);
+        set.setDrawValues(false);
+        //set.setValueTextSize(10f);
+        //set.setValueTextColor(Color.rgb(240, 238, 70));
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        d.addDataSet(set);
+        return d;
+    }
+
     private void addDataToSpinner() {
         ////////////////////1
         spinnerDate = (Spinner) findViewById(R.id.spinnerDate);
@@ -313,14 +364,15 @@ public class MainActivity extends AppCompatActivity
         spinnerDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if(position == 0) {
+                if (position == 0) {
                     foos = db.getUniqueDateActivityDB();
                 }
-                if(position == 1) {
+                if (position == 1) {
                     foos = db.getUniqueMonthActivityDB();
                 }
                 chart();
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
@@ -337,16 +389,16 @@ public class MainActivity extends AppCompatActivity
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 foos = db.fillFoo(foos);
                 /////Expandable L}ist
-                ExpandableListView expandableList = (ExpandableListView)findViewById(R.id.expandable_list);
+                ExpandableListView expandableList = (ExpandableListView) findViewById(R.id.expandable_list);
                 //Создаем набор данных для адаптера
                 //Создаем адаптер и передаем context и список с данными
                 final ExpListAdapter adapterExpList = new ExpListAdapter(getContext(), foos,
-                        (String) ((TextView)selectedItemView.findViewById(android.R.id.text1)).getText());
+                        (String) ((TextView) selectedItemView.findViewById(android.R.id.text1)).getText());
                 expandableList.setAdapter(adapterExpList);
-               expandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+                expandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
                     @Override
                     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                        ActivityDB activityDB = (ActivityDB)adapterExpList.getChild(groupPosition,childPosition);
+                        ActivityDB activityDB = (ActivityDB) adapterExpList.getChild(groupPosition, childPosition);
                         Intent intent = new Intent(getContext(), ShowActivity.class);
                         intent.putExtra("activity", activityDB);
                         startActivity(intent);
@@ -355,37 +407,12 @@ public class MainActivity extends AppCompatActivity
                 });
                 chart();
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
-    }
-    private LineData generateLineData() {
-
-        LineData d = new LineData();
-
-        ArrayList<Entry> entries = new ArrayList<Entry>();
-
-        for (int index = 0; index < itemcount; index++)
-            entries.add(new Entry(getRandom(15, 10), index));
-
-        LineDataSet set = new LineDataSet(entries, "Line DataSet");
-        set.setColor(Color.rgb(240, 238, 70));
-        set.setLineWidth(2.5f);
-        set.setCircleColor(Color.rgb(240, 238, 70));
-        set.setCircleRadius(5f);
-        set.setFillColor(Color.rgb(240, 238, 70));
-        set.setDrawCubic(true);
-        set.setDrawValues(true);
-        set.setValueTextSize(10f);
-        set.setValueTextColor(Color.rgb(240, 238, 70));
-
-        set.setAxisDependency(YAxis.AxisDependency.LEFT);
-
-        d.addDataSet(set);
-
-        return d;
     }
 
 
@@ -440,7 +467,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-                    signOut();
+            signOut();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
