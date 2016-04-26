@@ -34,17 +34,16 @@ public class AlarmReceiver extends BroadcastReceiver {
         Notification.Builder builder = new Notification.Builder(context);
 
         builder.setContentIntent(contentIntent)
-                .setSmallIcon(R.drawable.ic_launcher_big)
+                .setSmallIcon(R.drawable.ic_run_white_48dp)
                 // большая картинка
                 .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.ic_run_black_48dp))
                 //.setTicker(res.getString(R.string.warning)) // текст в строке состояния
-                .setTicker("Последнее китайское предупреждение!")
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
                 //.setContentTitle(res.getString(R.string.notifytitle)) // Заголовок уведомления
-                .setContentTitle("Напоминание")
+                .setContentTitle("GO")
                 //.setContentText(res.getString(R.string.notifytext))
-                .setContentText("Пора покормить кота"); // Текст уведомления
+                .setContentText("It's time to some training"); // Текст уведомления
 
         // Notification notification = builder.getNotification(); // до API 16
         Notification notification = builder.build();

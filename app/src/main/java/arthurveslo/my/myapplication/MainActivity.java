@@ -298,9 +298,9 @@ public class MainActivity extends AppCompatActivity
             for (int index = 0; index < dDays.size(); index++)
                 entries.add(new BarEntry((float) db.getDayActivityDB(index + 1, selector), index));
         }
-        BarDataSet set = new BarDataSet(entries, "Bar DataSet");
-        set.setColor(Color.rgb(60, 220, 78));
-        set.setValueTextColor(Color.rgb(60, 220, 78));
+        BarDataSet set = new BarDataSet(entries, selector);
+        set.setColor(Color.rgb(0,150,136));
+        set.setValueTextColor(Color.rgb(0,150,136));
         set.setValueTextSize(10f);
         d.addDataSet(set);
 
@@ -339,12 +339,12 @@ public class MainActivity extends AppCompatActivity
                 entries.add(new Entry(data, index));
         }
 
-        LineDataSet set = new LineDataSet(entries, "Line DataSet");
-        set.setColor(Color.rgb(240, 238, 70));
+        LineDataSet set = new LineDataSet(entries, "Your Plan");
+        set.setColor(Color.rgb(255,87,34));
         set.setLineWidth(2.5f);
-        set.setCircleColor(Color.rgb(240, 238, 70));
+        set.setCircleColor(Color.rgb(255,87,34));
         set.setCircleRadius(3f);
-        set.setFillColor(Color.rgb(240, 238, 70));
+        set.setFillColor(Color.rgb(255,87,34));
         set.setDrawCubic(true);
         set.setDrawValues(false);
         //set.setValueTextSize(10f);
@@ -468,16 +468,6 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             signOut();
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

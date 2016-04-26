@@ -7,7 +7,7 @@
         android:layout_height="50dp"
         android:layout_marginLeft="40dp"
         android:gravity="center_vertical"
-        android:textColor="@android:color/white"
+        android:textColor="@color/colorText_Icons"
         android:textStyle="bold"
         />
 </LinearLayout>

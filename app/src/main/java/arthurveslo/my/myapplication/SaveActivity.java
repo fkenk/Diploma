@@ -83,7 +83,7 @@ public class SaveActivity extends AppCompatActivity {
         SetImageForSport.set_Image(((ImageView)findViewById(R.id.icon_sport)), sport);
 
         Log.e(TAG + "CALORIES", roundResult(calcCalories(sport, time),2) + "");
-        ((TextView)findViewById(R.id.textCalories)).setText(roundResult(calcCalories(sport, time),1)+"");
+        ((TextView)findViewById(R.id.textCalories)).setText(roundResult(calcCalories(sport, time),3)+"");
         ((TextView)findViewById(R.id.textTime)).setText(time);
 
 
@@ -127,6 +127,7 @@ public class SaveActivity extends AppCompatActivity {
 
         return sum/list.size();
     }
+
     private double calcCalories(String sport, String time) {
         String[] timme = time.split ( ":" );
         int minute = Integer.parseInt ( timme[0].trim() );
@@ -136,7 +137,7 @@ public class SaveActivity extends AppCompatActivity {
         double weight = user.get_weight();
 
         if(sport.equals("Bike")) {
-            return (weight/0.4536)*2.93*minute;
+            return (weight/0.4536)*2.93*(minute/60 + second/60/60);
         }
 
         double VO2 = (0.2 * average(speedList)) + 3.5;
@@ -158,14 +159,13 @@ public class SaveActivity extends AppCompatActivity {
 
     }
 
-    double roundResult (double d, int precise) {
-
-        precise = 10^precise;
-        d = d*precise;
-        int i = (int) Math.round(d);
-        return (double) i/precise;
-
+    double roundResult (double value, int places) {
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
+
     private void saveToDB() {
         DatabaseHandler db = new DatabaseHandler(this);
         ActivityDB activityDB = new ActivityDB();

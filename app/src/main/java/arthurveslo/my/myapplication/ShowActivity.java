@@ -59,7 +59,7 @@ public class ShowActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.textTime)).setText(model.get_time());
         loadImageFromStorage(model.get_map());
 
-        Button shareButton = (Button) findViewById(R.id.buttonShare);
+        FloatingActionButton shareButton = (FloatingActionButton) findViewById(R.id.buttonShare);
         final ImageView imageView = (ImageView) findViewById(R.id.map);
         assert shareButton != null;
         shareButton.setOnClickListener(new View.OnClickListener() {

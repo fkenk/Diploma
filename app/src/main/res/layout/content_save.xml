@@ -155,7 +155,7 @@
             android:layout_below="@+id/distance"
             android:layout_toEndOf="@+id/textCalories"
             android:gravity="center"
-            android:text=" kal"
+            android:text=" Kkal"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/colorText_Icons"
             android:layout_alignBottom="@+id/textCalories" />
