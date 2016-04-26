@@ -269,9 +269,6 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
             String temp = (new SimpleDateFormat("mm:ss")).format(new Date(
                     mCurrentPeriod * 1000));
             ((TextView) findViewById(R.id.textTimer)).setText(temp);
-// This method runs in the same thread as the UI.
-// Do something to the UI thread here
-
         }
     };
 
@@ -594,21 +591,8 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-        } else {
-            // Show rationale and request permission.
-        }
-        //mMap.setOnMapClickListener(this);
-
-
         // Enable LocationLayer of Google Map
         mMap.setMyLocationEnabled(true);
         // Getting LocationManager object from System Service LOCATION_SERVICE
@@ -624,6 +608,19 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
             ((TextView) findViewById(R.id.textLatitude)).setText(roundResult(location.getLatitude(),5) + "° lat");
             ((TextView) findViewById(R.id.textLongitude)).setText(roundResult(location.getLongitude(),5) +"° lon" );
         }
+
+        // Add a marker in Sydney and move the camera
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        } else {
+            // Show rationale and request permission.
+        }
+        //mMap.setOnMapClickListener(this);
+
+
+
     }
 
     double roundResult (double value, int places) {
@@ -689,6 +686,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         ((TextView) findViewById(R.id.textLatitude)).setText(roundResult(location.getLatitude(),5) + "° lat");
         arrayListLongitude.add(location.getLongitude()); //26.2580509185791
         ((TextView) findViewById(R.id.textLongitude)).setText(roundResult(location.getLongitude(),5) +"° lon" );
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
         Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
         List<Address> addresses = null;
         try {

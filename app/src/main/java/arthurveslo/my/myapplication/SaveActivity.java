@@ -87,10 +87,8 @@ public class SaveActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.textTime)).setText(time);
 
 
-        Button shareButton = (Button) findViewById(R.id.buttonShare);
-        final ImageView imageView = (ImageView) findViewById(R.id.map);
-        assert shareButton != null;
-        shareButton.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton shareFab = (FloatingActionButton) findViewById(R.id.buttonShare);
+        shareFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                share_image_text_GPLUS();
@@ -109,7 +107,13 @@ public class SaveActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("image/jpg");
         intent.putExtra(Intent.EXTRA_STREAM, uri);
-        intent.putExtra(Intent.EXTRA_TEXT, "blahblah");
+        intent.putExtra(Intent.EXTRA_TEXT,
+                "Hey this is my activity - "+((TextView)findViewById(R.id.textLatitude)).getText().toString() +"\n"
+                +"steps "+ Integer.parseInt(((TextView)findViewById(R.id.textSteps)).getText().toString()) + "\n"
+                +"burned calories" + Double.parseDouble(String.valueOf(((TextView)findViewById(R.id.textCalories)).getText())) + "\n"
+                +"time " + ((TextView)findViewById(R.id.textTime)).getText().toString() + "\n"
+                +"avr speed "+ Double.parseDouble(((TextView)findViewById(R.id.textAvrSpeed)).getText().toString())
+        );
         intent.setPackage("com.google.android.apps.plus");
         startActivity(intent);
     }

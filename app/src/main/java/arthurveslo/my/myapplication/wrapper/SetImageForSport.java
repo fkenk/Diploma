@@ -11,13 +11,13 @@ public class SetImageForSport {
 
     public static void set_Image(ImageView imageView, String sport) {
         if(sport.equals("Walk")) {
-            imageView.setImageResource(R.drawable.ic_walk_black_36dp);
+            imageView.setImageResource(R.drawable.ic_walk_white_36dp);
         }
         if(sport.equals("Bike")) {
-            imageView.setImageResource(R.drawable.ic_bike_black_36dp);
+            imageView.setImageResource(R.drawable.ic_bike_white_36dp);
         }
         if(sport.equals("Run")) {
-            imageView.setImageResource(R.drawable.ic_run_black_36dp);
+            imageView.setImageResource(R.drawable.ic_run_white_36dp);
         }
     }
 }
