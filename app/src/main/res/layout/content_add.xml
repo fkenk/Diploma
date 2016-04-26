@@ -41,10 +41,11 @@
                 android:id="@+id/spinner"
                 android:layout_gravity="center_horizontal"
                 android:popupBackground = "@color/colorPrimary"
-                android:layout_below="@+id/textSteps"
+                android:textColor="@color/colorText_Icons"
+                android:layout_below="@+id/imageView5"
                 android:layout_alignParentStart="true" />
 
-            <ScrollView
+            <!--<ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
@@ -55,70 +56,125 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scrollbars="vertical" />
-            </ScrollView>
+            </ScrollView> -->
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="0 steps"
+                android:gravity="center"
                 android:id="@+id/textSteps"
+                android:textColor="@color/colorText_Icons"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/imageView5"
+                android:layout_above="@+id/spinner" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="latitude:"
+                android:id="@+id/textLatitude"
+                android:gravity="center"
+                android:textColor="@color/colorText_Icons"
+                android:layout_toEndOf="@+id/imageView6"
+                android:layout_alignBottom="@+id/imageView6"
+                android:layout_alignTop="@+id/imageView6" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="longitude:"
+                android:id="@+id/textLongitude"
+                android:gravity="center"
+                android:textColor="@color/colorText_Icons"
+                android:layout_toEndOf="@+id/imageView7"
+                android:layout_alignTop="@+id/imageView7"
+                android:layout_alignBottom="@+id/textAvrSpeed" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="-/-"
+                android:id="@+id/textDistance"
+                android:gravity="center"
+                android:textColor="@color/colorText_Icons"
+                android:layout_below="@+id/textTimer"
+                android:layout_toEndOf="@+id/imageView8"
+                android:layout_alignBottom="@+id/imageView8" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="-/-"
+                android:id="@+id/textAvrSpeed"
+                android:gravity="center"
+                android:textColor="@color/colorText_Icons"
+                android:layout_alignBottom="@+id/imageView9"
+                android:layout_toEndOf="@+id/imageView9"
+                android:layout_alignTop="@+id/imageView9" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="00:00"
+                android:id="@+id/textTimer"
+                android:layout_below="@+id/spinner"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/colorText_Icons"
+                android:textSize="60dp"/>
+
+            <ImageView
+                android:layout_margin="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView5"
+                android:src="@drawable/white_footprint_36"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true" />
 
-            <TextView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="latitude: no data"
-                android:id="@+id/textLatitude"
+                android:id="@+id/imageView6"
+                android:src="@drawable/ic_drag_horizontal_white_36dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_above="@+id/imageView9"
+                android:layout_centerHorizontal="true" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView7"
+                android:src="@drawable/ic_drag_vertical_white_36dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_alignBottom="@+id/textAvrSpeed"
+                android:layout_toStartOf="@+id/textLatitude" />
+
+            <ImageView
+                android:layout_margin="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView8"
+                android:src="@drawable/point_objects_36"
                 android:layout_below="@+id/textTimer"
                 android:layout_alignParentStart="true" />
 
-            <TextView
+            <ImageView
+                android:layout_margin="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="longitude: no data"
-                android:id="@+id/textLongitude"
-                android:layout_below="@+id/textLatitude"
-                android:layout_alignParentStart="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="calories:"
-                android:id="@+id/textCalories"
-                android:layout_below="@+id/textLongitude"
-                android:layout_alignParentStart="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="distance:"
-                android:id="@+id/textDistance"
-                android:layout_below="@+id/textCalories"
-                android:layout_alignParentStart="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="speed:"
-                android:id="@+id/textAvrSpeed"
+                android:id="@+id/imageView9"
+                android:src="@drawable/ic_speedometer_white_36dp"
                 android:layout_below="@+id/textDistance"
                 android:layout_alignParentStart="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="TIMER"
-                android:id="@+id/textTimer"
-                android:layout_below="@+id/spinner"
-                android:layout_centerHorizontal="true" />
         </RelativeLayout>
 
 

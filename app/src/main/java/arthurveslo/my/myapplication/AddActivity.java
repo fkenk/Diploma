@@ -153,9 +153,9 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         Resources res = getResources();
 
         final ArrayList<SpinnerModelKindOfSports> spinnerModels = new ArrayList<>();
-        spinnerModels.add(new SpinnerModelKindOfSports("Run", "ic_run_black_48dp"));
+        spinnerModels.add(new SpinnerModelKindOfSports("Run", "ic_run_white_36dp"));
         spinnerModels.add(new SpinnerModelKindOfSports("Walk", "ic_walk_white_36dp"));
-        spinnerModels.add(new SpinnerModelKindOfSports("Bike", "ic_bike_black_24dp"));
+        spinnerModels.add(new SpinnerModelKindOfSports("Bike", "ic_bike_white_36dp"));
         // Create custom adapter object ( see below CustomAdapter.java )
         AdapterKindsOfSport adapter = new AdapterKindsOfSport(this, R.layout.spinner_kind_of_sports, spinnerModels, res);
 
@@ -183,7 +183,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMargins(pauseBtn, 0, 0, 220, 0);
+                setMargins(pauseBtn, 0, 0, 240, 0);
                 playBtn.setVisibility(View.GONE);
                 pauseBtn.setVisibility(View.VISIBLE);
                 writeFlag = true;
@@ -204,7 +204,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (timer != null)
                     timer.cancel();
                 writeFlag = false;
-                setMargins(playBtn, 0, 0, 220, 0);
+                setMargins(playBtn, 0, 0, 240, 0);
                 pauseBtn.setVisibility(View.GONE);
                 playBtn.setVisibility(View.VISIBLE);
                 arrayListLatitude.clear();
@@ -484,7 +484,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         MessageOnlyLogFilter msgFilter = new MessageOnlyLogFilter();
         logWrapper.setNext(msgFilter);
         // On screen logging via a customized TextView.
-        LogView logView = (LogView) findViewById(R.id.sample_logview);
+       /* LogView logView = (LogView) findViewById(R.id.sample_logview);
 
         // Fixing this lint errors adds logic without benefit.
         //noinspection AndroidLintDeprecation
@@ -492,7 +492,7 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
 
         logView.setBackgroundColor(Color.WHITE);
         msgFilter.setNext(logView);
-        Log.i(TAG, "Ready");
+        Log.i(TAG, "Ready");*/
     }
 
     /**
@@ -621,12 +621,17 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
         Location location = locationManager.getLastKnownLocation(provider);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
         if(location != null) {
-            ((TextView) findViewById(R.id.textLatitude)).setText("latitude:" + location.getLatitude());
-            ((TextView) findViewById(R.id.textLongitude)).setText("longitude:" + location.getLongitude());
+            ((TextView) findViewById(R.id.textLatitude)).setText(roundResult(location.getLatitude(),5) + "° lat");
+            ((TextView) findViewById(R.id.textLongitude)).setText(roundResult(location.getLongitude(),5) +"° lon" );
         }
     }
 
-
+    double roundResult (double value, int places) {
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
     private void setMargins(View view, int left, int top, int right, int bottom) {
         if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
@@ -681,9 +686,9 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         arrayListLatitude.add(location.getLatitude()); //50.632755279541016
-        ((TextView) findViewById(R.id.textLatitude)).setText("latitude:" + location.getLatitude());
+        ((TextView) findViewById(R.id.textLatitude)).setText(roundResult(location.getLatitude(),5) + "° lat");
         arrayListLongitude.add(location.getLongitude()); //26.2580509185791
-        ((TextView) findViewById(R.id.textLongitude)).setText("longitude:" + location.getLongitude());
+        ((TextView) findViewById(R.id.textLongitude)).setText(roundResult(location.getLongitude(),5) +"° lon" );
         Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
         List<Address> addresses = null;
         try {
@@ -718,11 +723,11 @@ public class AddActivity extends AppCompatActivity implements OnMapReadyCallback
                 Location.distanceBetween(arrayListLatitude.get(arrayListLatitude.size()-2), arrayListLongitude.get(arrayListLongitude.size()-2),
                         arrayListLatitude.get(arrayListLatitude.size()-1), arrayListLongitude.get(arrayListLongitude.size()-1),results);
                 distance += results[0];
-                ((TextView) findViewById(R.id.textDistance)).setText("distance: " + distance);
+                ((TextView) findViewById(R.id.textDistance)).setText(distance+" m");
             }
             speed = location.getSpeed();
             speedList.add(speed);
-            ((TextView) findViewById(R.id.textAvrSpeed)).setText("speed:" + speed);
+            ((TextView) findViewById(R.id.textAvrSpeed)).setText(speed + "m/s");
         }
     }
 
