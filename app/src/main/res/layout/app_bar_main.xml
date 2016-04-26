@@ -58,12 +58,12 @@
             fab:fab_label="@string/weight_height" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/add_activity"
+            android:id="@+id/add_plan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_pen_white_24dp"
             fab:menu_fab_size="normal"
-            fab:fab_label="@string/add_activity" />
+            fab:fab_label="@string/add_plan" />
 
     </com.github.clans.fab.FloatingActionMenu>
    <!-- <com.github.clans.fab.FloatingActionButton

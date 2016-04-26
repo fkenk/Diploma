@@ -100,15 +100,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setContext(this);
-       /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -168,6 +159,15 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        FloatingActionButton planActiv = (FloatingActionButton) findViewById(R.id.add_plan);
+        planActiv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), PlanActivity.class);
+                startActivity(intent);
+            }
+        });
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -187,14 +187,7 @@ public class MainActivity extends AppCompatActivity
         Calendar mycal = new GregorianCalendar(Integer.parseInt(yf.format(currentDate)), Integer.parseInt(mf.format(currentDate)) - 1, 1);
         int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);*/
 
-        java.util.Date currentDate = new java.util.Date();
-        SimpleDateFormat mf = new SimpleDateFormat("MM");
-        SimpleDateFormat yf = new SimpleDateFormat("yyyy");
-        Calendar mycal = new GregorianCalendar(Integer.parseInt(yf.format(currentDate)), Integer.parseInt(mf.format(currentDate)) - 1, 1);
-        int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);
-        for (int i = 1; i <= daysInMonth; i++) {
-            dDays.add(""+i);
-        }
+        fillDays();
 
         // [START configure_signin]
         // Configure sign-in to request the user's ID, email address, and basic
@@ -215,6 +208,17 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    private void fillDays() {
+        java.util.Date currentDate = new java.util.Date();
+        SimpleDateFormat mf = new SimpleDateFormat("MM");
+        SimpleDateFormat yf = new SimpleDateFormat("yyyy");
+        Calendar mycal = new GregorianCalendar(Integer.parseInt(yf.format(currentDate)), Integer.parseInt(mf.format(currentDate)) - 1, 1);
+        int daysInMonth = mycal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        for (int i = 1; i <= daysInMonth; i++) {
+            dDays.add(""+i);
+        }
+    }
+
     private void signOut() {
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
@@ -225,6 +229,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
     }
+
     private void chart() {
         CombinedChart mChart = (CombinedChart) findViewById(R.id.chart1);
         mChart.setDescription("");
@@ -299,16 +304,11 @@ public class MainActivity extends AppCompatActivity
         return d;
     }
     private void addDataToSpinner() {
-
-
         ////////////////////1
         spinnerDate = (Spinner) findViewById(R.id.spinnerDate);
-// Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.date_array, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
         spinnerDate.setAdapter(adapter);
         spinnerDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -326,7 +326,6 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-
         /////////////////2
         spinnerSelector = (Spinner) findViewById(R.id.spinnerSelector);
         ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
@@ -347,8 +346,6 @@ public class MainActivity extends AppCompatActivity
                expandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
                     @Override
                     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                        //Nothing here ever fires
-
                         ActivityDB activityDB = (ActivityDB)adapterExpList.getChild(groupPosition,childPosition);
                         Intent intent = new Intent(getContext(), ShowActivity.class);
                         intent.putExtra("activity", activityDB);
@@ -357,9 +354,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
                 chart();
-
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 

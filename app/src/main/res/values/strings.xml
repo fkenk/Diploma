@@ -154,4 +154,6 @@
     <string name="char_label">lalalala</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_activity_show">ShowActivity</string>
+    <string name="add_plan">Add plan</string>
+    <string name="title_activity_plan">PlanActivity</string>
 </resources>
