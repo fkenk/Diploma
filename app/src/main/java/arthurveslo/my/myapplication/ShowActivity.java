@@ -81,7 +81,13 @@ public class ShowActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("image/jpg");
         intent.putExtra(Intent.EXTRA_STREAM, uri);
-        intent.putExtra(Intent.EXTRA_TEXT, "blahblah");
+        intent.putExtra(Intent.EXTRA_TEXT,
+                "Hey this is my activity - "+((TextView)findViewById(R.id.textLatitude)).getText().toString() +"\n"
+                        +"steps "+ Integer.parseInt(((TextView)findViewById(R.id.textSteps)).getText().toString()) + "\n"
+                        +"burned calories" + Double.parseDouble(String.valueOf(((TextView)findViewById(R.id.textCalories)).getText())) + "\n"
+                        +"time " + ((TextView)findViewById(R.id.textTime)).getText().toString() + "\n"
+                        +"avr speed "+ Double.parseDouble(((TextView)findViewById(R.id.textAvrSpeed)).getText().toString())
+        );
         intent.setPackage("com.google.android.apps.plus");
         startActivity(intent);
     }
